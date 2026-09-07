@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resend Verification | ArticleNest</title>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body style="font-family:'Segoe UI',sans-serif; max-width:560px; margin:60px auto; padding:20px; line-height:1.7; text-align:center;">
+  <h2>📧 Email Verification</h2>
+  <div id="status" style="padding:24px; border:2px solid #e5e7eb; border-radius:12px; margin-top:20px;">Checking login…</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAemWn2O-rbc5wptLMh8MpIykKex041Y5M",
+      authDomain: "articlenest-001.firebaseapp.com",
+      projectId: "articlenest-001",
+      storageBucket: "articlenest-001.firebasestorage.app",
+      messagingSenderId: "136201009485",
+      appId: "1:136201009485:web:e66bf907bec99f432f5f04"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const s = document.getElementById('status');
+
+    onAuthStateChanged(auth, async (u) => {
+      if (!u) {
+        s.innerHTML = '❌ මුලින්ම <a href="login.html"><b>login</b></a> වෙන්න.';
+        return;
+      }
+      if (u.emailVerified) {
+        s.innerHTML = '✅ ඔබේ email දැනටමත් verified! 🎉<br><br><a href="index.html" style="color:#4F6EF7;"><b>← Home එකට යන්න</b></a>';
+        return;
+      }
+      s.innerHTML = 'Logged in: <b>' + u.email + '</b><br>Status: ⏳ Not verified<br><br>' +
+        '<button id="resendBtn" style="background:#4F6EF7;color:#fff;border:none;padding:14px 28px;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;">📧 Resend Verification Email</button>' +
+        '<p id="note" style="color:#6b7280;font-size:.9rem;margin-top:14px;"></p>';
+
+      document.getElementById('resendBtn').addEventListener('click', async () => {
+        const note = document.getElementById('note');
+        try {
+          await sendEmailVerification(u);
+          note.style.color = '#16a34a';
+          note.innerHTML = '✅ <b>Email එක යවලා!</b> Gmail inbox + <b>Spam folder</b> දෙකම බලන්න.<br>Verify කරලා මේ page එකට ආපහු ආවම "verified" කියලා පේනවා.';
+        } catch (e) {
+          note.style.color = '#dc2626';
+          if (e.code === 'auth/too-many-requests') {
+            note.innerHTML = '⏳ වැඩිය ඉක්මනට යවලා! <b>මිනිත්තු 2-3ක් ඉඳලා</b> ආයේ try කරන්න.';
+          } else {
+            note.innerHTML = '❌ ' + e.message;
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
