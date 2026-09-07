@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /login.html
+Disallow: /register.html
+Disallow: /profile.html
+
+Sitemap: https://pradeetech.github.io/articlenest/sitemap.xml

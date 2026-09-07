@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | ArticleNest</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="admin-body">
+  <div class="topbar">
+    <strong>🪶 ArticleNest — Admin Dashboard</strong>
+    <div class="links">
+      <a href="../index.html">← View Site</a>
+      <a href="../profile.html">Profile</a>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <div class="verify-banner" id="verifyBanner">
+    <span>✉️ Your email is not verified yet — please verify to publish articles. Check your inbox.</span>
+    <button id="resendVerifyBtn">Resend Verification Email</button>
+  </div>
+
+  <div class="admin-wrap">
+    <div class="alert" id="msg"></div>
+
+    <div class="panel">
+      <h2 id="editorTitle">✍️ Write New Article</h2>
+      <div class="form-field">
+        <label>Article Title *</label>
+        <input type="text" id="artTitle" placeholder="e.g., 10 Tech Trends to Watch in 2026">
+      </div>
+      <div class="form-field">
+        <label>Category *</label>
+        <select id="artCategory">
+          <option>Technology</option><option>Education</option>
+          <option>Business</option><option>Lifestyle</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Cover Image URL (optional)</label>
+        <input type="url" id="artCover" placeholder="https://… image link">
+      </div>
+      <div class="form-field">
+        <label>Content *</label>
+        <div id="editor"></div>
+      </div>
+      <div class="form-field">
+        <label>SEO — Meta Title (optional)</label>
+        <input type="text" id="artMetaTitle" placeholder="Leave empty to use the article title">
+      </div>
+      <div class="form-field">
+        <label>SEO — Meta Description (150–160 chars) *</label>
+        <input type="text" id="artMetaDesc" maxlength="160" placeholder="Short summary shown in Google results">
+      </div>
+      <div class="form-field">
+        <label>SEO — Keywords (comma separated)</label>
+        <input type="text" id="artKeywords" placeholder="technology, trends, 2026">
+      </div>
+      <button class="btn-save" id="saveBtn">💾 Save & Publish</button>
+    </div>
+
+    <div class="panel">
+      <h2>📚 All Articles</h2>
+      <table>
+        <thead><tr><th>Title</th><th>Category</th><th>Views</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="articlesTable"><tr><td colspan="5">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module" src="../js/admin.js"></script>
+</body>
+</html>
