@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fix Admin | ArticleNest</title>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body style="font-family:'Segoe UI',sans-serif; max-width:620px; margin:60px auto; padding:20px; line-height:1.7;">
+  <h2>🔧 ArticleNest — Admin Role Fix Tool</h2>
+  <div id="status" style="padding:20px; border:2px solid #e5e7eb; border-radius:12px; margin-top:20px;">Checking login…</div>
+  <p style="color:#6b7280; margin-top:20px;">⚠️ Tool එක පාවිච්චි කරලා ඉවර වුණාම මේ file එක GitHub එකෙන් <b>delete</b> කරන්න!</p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAemWn2O-rbc5wptLMh8MpIykKex041Y5M",
+      authDomain: "articlenest-001.firebaseapp.com",
+      projectId: "articlenest-001",
+      storageBucket: "articlenest-001.firebasestorage.app",
+      messagingSenderId: "136201009485",
+      appId: "1:136201009485:web:e66bf907bec99f432f5f04"
+    };
+    const ADMIN = "siriyalathaaththanayaka22@gmail.com";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const s = document.getElementById('status');
+
+    onAuthStateChanged(auth, async (u) => {
+      if (!u) { s.innerHTML = '❌ මුලින්ම <a href="login.html">login</a> වෙන්න (admin email එකෙන්).'; return; }
+      if ((u.email || '').toLowerCase() !== ADMIN) {
+        s.innerHTML = '⛔ මේ tool එක admin email එකට විතරයි.<br>Logged in: ' + u.email;
+        return;
+      }
+      s.textContent = '⏳ Checking profile…';
+      try {
+        const ref = doc(db, 'users', u.uid);
+        const snap = await getDoc(ref);
+
+        if (snap.exists() && snap.data().role === 'admin') {
+          s.innerHTML = '✅ දැනටමත් Admin! <a href="admin/dashboard.html"><b>Dashboard එකට යන්න →</b></a>';
+          return;
+        }
+        if (snap.exists()) {
+          s.innerHTML = '⚠️ Profile doc එක තියෙනවා but role = "' + snap.data().role + '"<br><br>' +
+            '<b>Fix:</b> Firebase Console → Firestore → Data → users collection → ඔබේ document එක delete කරලා, මේ page එක refresh කරන්න.';
+          return;
+        }
+        // Doc නෑ — අලුතින් admin doc එක හදනවා
+        const name = u.displayName || 'Pradeep';
+        await setDoc(ref, {
+          name: name, email: u.email, role: 'admin',
+          bookmarks: [], createdAt: serverTimestamp()
+        });
+        if (!u.displayName) await updateProfile(u, { displayName: name });
+        s.innerHTML = '🎉 <b>SUCCESS!</b> Admin profile හැදුණා!<br><br>' +
+          '<a href="admin/dashboard.html" style="background:#4F6EF7;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;"><b>Dashboard එකට යන්න →</b></a><br><br>' +
+          '<small>⚠️ දැන් මේ file එක GitHub එකෙන් delete කරන්න අමතක කරන්න එපා!</small>';
+      } catch (e) {
+        s.innerHTML = '❌ Error: ' + e.message + '<br><br>Logout → Login කරලා ආයෙ try කරන්න.';
+      }
+    });
+  </script>
+</body>
+</html>
