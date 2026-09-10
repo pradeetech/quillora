@@ -3,23 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About & Contact | ArticleNest</title>
-  <meta name="description" content="Get in touch with ArticleNest — Your World of Ideas & Stories.">
+  <title>About & Contact | Quillora</title>
+  <meta name="description" content="Get in touch with Quillora — Where Every Story Takes Flight.">
+  <link rel="icon" type="image/png" href="img/logo.png">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <a href="index.html" class="logo"><span class="logo-icon">🪶</span><span class="logo-text">Article<strong>Nest</strong></span></a>
+      <a href="index.html" class="logo">
+        <img src="img/logo.png" alt="Quillora">
+        <span class="logo-text">Quill<strong>ora</strong></span>
+      </a>
       <nav class="main-nav"><a href="index.html">Home</a><a href="contact.html" class="active">About</a></nav>
       <div class="header-actions"><div id="authArea" class="auth-area"></div></div>
     </div>
   </header>
 
   <main class="container page-section">
-    <h1>About ArticleNest 🪶</h1>
-    <p><strong>ArticleNest — Your World of Ideas & Stories.</strong> We publish insightful articles on Technology, Education, Business and Lifestyle. Our mission is simple: deliver clear, well-researched, and genuinely useful content that respects your time.</p>
-    <p>Every article is written and curated by our team with care — no clickbait, no fluff.</p>
+    <h1>About Quillora 🪶</h1>
+    <p><strong>Quillora — Where Every Story Takes Flight.</strong> We publish insightful articles on Technology, Education, Business and Lifestyle. Our mission is simple: deliver clear, well-researched, and genuinely useful content that respects your time.</p>
+    <p>Every article is written and curated with care — no clickbait, no fluff. Just stories worth your while, written with a quill, shared with the world.</p>
 
     <h2>📬 Contact Us</h2>
     <p>Have a question, feedback, or a story idea? We'd love to hear from you!</p>
@@ -29,14 +33,14 @@
       <label for="cEmail">Your Email</label>
       <input type="email" id="cEmail" required>
       <label for="cMsg">Message</label>
-      <textarea id="cMsg" rows="5" required style="width:100%; padding:12px 14px; border:2px solid var(--border); border-radius:8px; font-family:inherit; font-size:.95rem; outline:none;"></textarea>
+      <textarea id="cMsg" rows="5" required></textarea>
       <button type="submit" class="btn primary" style="margin-top:14px;">Send Message ✉️</button>
     </form>
-    <p class="muted" style="margin-top:16px;">Or email us directly: <strong>hello@articlenest.com</strong> (ඔබේ email එක මෙතන දාන්න)</p>
+    <p class="muted" style="margin-top:16px;">Or email us directly: <strong>hello@quillora.com</strong></p>
   </main>
 
   <footer class="site-footer">
-    <div class="container footer-bottom"><p>© <span id="year"></span> ArticleNest</p></div>
+    <div class="container footer-bottom"><p>© <span id="year"></span> Quillora</p></div>
   </footer>
 
   <script type="module" src="js/shared.js"></script>
@@ -46,7 +50,7 @@
       const n = document.getElementById('cName').value;
       const em = document.getElementById('cEmail').value;
       const m = document.getElementById('cMsg').value;
-      location.href = `mailto:hello@articlenest.com?subject=Contact from ${encodeURIComponent(n)}&body=${encodeURIComponent(m + '\n\n— ' + n + ' (' + em + ')')}`;
+      location.href = `mailto:hello@quillora.com?subject=Contact from ${encodeURIComponent(n)}&body=${encodeURIComponent(m + '\n\n— ' + n + ' (' + em + ')')}`;
     });
   </script>
 </body>
