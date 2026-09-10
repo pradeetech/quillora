@@ -1,5 +1,5 @@
 // ============================================================
-// ArticleNest — Admin Dashboard (Owner Only)
+// Quillora — Admin Dashboard (Owner Only)
 // ============================================================
 import {
   db, auth, collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc,
