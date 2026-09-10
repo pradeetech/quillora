@@ -1,11 +1,11 @@
 // ============================================================
-// Quillora — Shared UI (Navbar auth + Categories + Helpers)
+// Quillora — Shared UI (Navbar auth + Categories + Privacy + Helpers)
 // ============================================================
 import {
   auth, db, doc, getDoc, onAuthStateChanged, signOut, isAdminEmail
 } from './firebase-config.js';
 
-// ---------- 📂 Main Categories ----------
+// ---------- 📂 Main Categories (18) ----------
 export const MAIN_CATEGORIES = [
   "Technology", "Business", "Finance", "Education", "Science",
   "Health", "Lifestyle", "Career", "Travel", "Food", "Sports",
@@ -56,7 +56,7 @@ export function articleCard(a, id) {
   </article>`;
 }
 
-// ---------- 📂 Categories Dropdown (navbar එකට auto-inject) ----------
+// ---------- 📂 Categories Dropdown + 🔒 Privacy Link (navbar auto-inject) ----------
 (function injectCategoriesNav() {
   const nav = document.querySelector('.main-nav');
   if (!nav || nav.querySelector('.nav-dropdown')) return;
@@ -69,6 +69,14 @@ export function articleCard(a, id) {
     </div>`;
   const about = nav.querySelector('a[href="contact.html"]');
   if (about) nav.insertBefore(drop, about); else nav.appendChild(drop);
+
+  // 🔒 Privacy Policy link (About ට පස්සේ add කරනවා)
+  if (!nav.querySelector('a[href="privacy.html"]')) {
+    const priv = document.createElement('a');
+    priv.href = 'privacy.html';
+    priv.textContent = 'Privacy';
+    nav.appendChild(priv);
+  }
 
   // Click toggle (touch devices)
   drop.querySelector('.drop-toggle').addEventListener('click', e => {
