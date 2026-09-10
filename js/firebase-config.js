@@ -12,7 +12,8 @@ import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, signOut, updateProfile,
   sendEmailVerification,
-  GoogleAuthProvider, signInWithPopup
+  GoogleAuthProvider, signInWithPopup,
+  signInWithRedirect, getRedirectResult
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -35,7 +36,8 @@ export {
   arrayUnion, arrayRemove,
   onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
   signOut, updateProfile, sendEmailVerification,
-  GoogleAuthProvider, signInWithPopup
+  GoogleAuthProvider, signInWithPopup,
+  signInWithRedirect, getRedirectResult
 };
 
 // ============================================================
@@ -45,8 +47,14 @@ export const SITE_CONFIG = {
   brand: "Quillora",
   tagline: "Where Every Story Takes Flight",
   url: "https://pradeetech.github.io/quillora",
-  categories: ["Technology", "Education", "Business", "Lifestyle"],
-  // 🔐 SECRET ADMIN EMAILS — මේ email එකෙන් register කරොත් silent admin!
+  // 📂 Main Categories (subcategories → article keywords field!)
+  categories: [
+    "Technology", "Business", "Finance", "Education", "Science",
+    "Health", "Lifestyle", "Career", "Travel", "Food", "Sports",
+    "Gaming", "Entertainment", "Home", "News", "Automotive",
+    "Motivation", "Design"
+  ],
+  // 🔐 SECRET ADMIN EMAILS
   adminEmails: ["siriyalathaaththanayaka22@gmail.com"]
 };
 
