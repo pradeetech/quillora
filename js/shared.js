@@ -78,6 +78,14 @@ export function articleCard(a, id) {
     nav.appendChild(priv);
   }
 
+  // 📜 Terms of Service link (Privacy ට පස්සේ)
+  if (!nav.querySelector('a[href="terms.html"]')) {
+    const terms = document.createElement('a');
+    terms.href = 'terms.html';
+    terms.textContent = 'Terms';
+    nav.appendChild(terms);
+  }
+
   // Click toggle (touch devices)
   drop.querySelector('.drop-toggle').addEventListener('click', e => {
     e.preventDefault();
