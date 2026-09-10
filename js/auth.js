@@ -1,8 +1,7 @@
 // ============================================================
-// ArticleNest — Auth Pages (Login / Register / Profile)
+// Quillora — Auth Pages (Login / Register / Profile)
 // Register form එකේ "admin" කියලා කිසිම වචනයක් නෑ —
 // email එක secret list එකේ නම් විතරක් silent admin.
-// Google Sign-in support එකත් තියෙනවා.
 // ============================================================
 import {
   auth, db, doc, getDoc, setDoc, updateDoc,
@@ -12,8 +11,6 @@ import {
   GoogleAuthProvider, signInWithPopup
 } from './firebase-config.js';
 import { articleCard, escapeHtml, fmtDate } from './shared.js';
-
-const page = location.pathname.split('/').pop();
 
 function showAuthError(msg) {
   const e = document.getElementById('authError');
@@ -37,9 +34,7 @@ if (regForm) {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, pass);
       await updateProfile(cred.user, { displayName: name });
-      // 📧 Verification email එක automatic send කරනවා
       await sendEmailVerification(cred.user).catch(() => {});
-      // 🔍 SILENT ROLE DETECTION:
       const role = isAdminEmail(cred.user.email) ? 'admin' : 'user';
       await setDoc(doc(db, 'users', cred.user.uid), {
         name, email, role, bookmarks: [], createdAt: serverTimestamp()
@@ -77,7 +72,6 @@ if (loginForm) {
 }
 
 // ==================== GOOGLE SIGN-IN ====================
-// Login සහ Register දෙකෙන්ම වැඩ කරනවා — role detection එක same!
 async function handleGoogleSignIn() {
   const err = document.getElementById('authError');
   try {
@@ -87,20 +81,18 @@ async function handleGoogleSignIn() {
     const email = (user.email || '').toLowerCase();
     const role = isAdminEmail(email) ? 'admin' : 'user';
 
-    // Profile doc එක තියෙනවද බලලා නැත්නම් අලුතින් හදනවා
     const ref = doc(db, 'users', user.uid);
     const snap = await getDoc(ref);
     if (!snap.exists()) {
       await setDoc(ref, {
         name: user.displayName || email.split('@')[0],
         email: email,
-        role: role,              // 🔍 secret email නම් silent admin!
+        role: role,
         bookmarks: [],
         createdAt: serverTimestamp()
       });
     }
 
-    // Redirect: admin → dashboard, user → home (අනිත් page එකකින් ආවොත් ඒකටම)
     const next = new URLSearchParams(location.search).get('next');
     location.href = next ? next : (role === 'admin' ? 'admin/dashboard.html' : 'index.html');
   } catch (ex) {
