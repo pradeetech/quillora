@@ -1,5 +1,5 @@
 // ============================================================
-// ArticleNest — Public Pages (Home / Article / Category / Search)
+// Quillora — Public Pages (Home / Article / Category / Search)
 // ============================================================
 import {
   auth, db, collection, getDocs, getDoc, doc, query, orderBy, where, limit,
@@ -16,12 +16,10 @@ async function initHome() {
   const lGrid = document.getElementById('latestGrid');
   const btn = document.getElementById('loadMoreBtn');
   try {
-    // 🔥 Trending — වැඩිම views
     const tq = query(collection(db,'articles'), where('published','==',true), orderBy('views','desc'), limit(3));
     const ts = await getDocs(tq);
     tGrid.innerHTML = ts.empty ? '<div class="empty">No articles yet — coming soon! ✨</div>'
       : ts.docs.map(d => articleCard(d.data(), d.id)).join('');
-    // 📰 Latest — Load More එක්ක
     let last = null;
     async function loadLatest(reset) {
       let q = query(collection(db,'articles'), where('published','==',true), orderBy('createdAt','desc'), limit(6));
@@ -54,11 +52,10 @@ async function initArticle() {
       return;
     }
     const a = snap.data();
-    updateDoc(ref, { views: increment(1) }).catch(()=>{}); // 👁️ view count
+    updateDoc(ref, { views: increment(1) }).catch(()=>{});
 
-    // 🔍 Dynamic SEO meta + JSON-LD
     const desc = a.metaDescription || getExcerpt(a.content, 155);
-    document.title = `${a.metaTitle || a.title} | ArticleNest`;
+    document.title = `${a.metaTitle || a.title} | Quillora`;
     setMeta('description', desc);
     if (a.keywords) setMeta('keywords', a.keywords);
     setMeta('og:title', a.title, true);
@@ -99,7 +96,7 @@ async function initArticle() {
   }
 }
 
-// ==================== 🤍 Bookmarks (User accounts) ====================
+// ==================== 🤍 Bookmarks ====================
 async function myBookmarkIds() {
   const u = auth.currentUser;
   if (!u) return null;
@@ -130,7 +127,7 @@ async function initCategory() {
   const grid = document.getElementById('categoryGrid');
   const cat = params.get('cat') || 'Technology';
   document.getElementById('categoryTitle').textContent = cat;
-  document.title = `${cat} Articles | ArticleNest`;
+  document.title = `${cat} Articles | Quillora`;
   try {
     const q = query(collection(db,'articles'), where('published','==',true), where('category','==',cat), orderBy('createdAt','desc'));
     const s = await getDocs(q);
@@ -144,7 +141,7 @@ async function initSearch() {
   const grid = document.getElementById('searchResults');
   const term = (params.get('q') || '').trim();
   document.getElementById('searchTerm').textContent = term || '…';
-  document.title = `Search: ${term} | ArticleNest`;
+  document.title = `Search: ${term} | Quillora`;
   if (!term) { grid.innerHTML = '<div class="empty">Type something in the search bar 🔍</div>'; return; }
   const t = term.toLowerCase();
   try {
@@ -179,8 +176,8 @@ function injectJsonLd(a, desc) {
     '@context':'https://schema.org', '@type':'Article',
     headline: a.title, description: desc,
     datePublished: a.createdAt?.toDate?.().toISOString?.(),
-    author: { '@type':'Person', name: 'ArticleNest' },
-    publisher: { '@type':'Organization', name:'ArticleNest' }
+    author: { '@type':'Person', name: 'Quillora' },
+    publisher: { '@type':'Organization', name:'Quillora' }
   });
   document.head.appendChild(s);
 }
