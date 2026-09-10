@@ -1,9 +1,17 @@
 // ============================================================
-// Quillora — Shared UI (Navbar auth + Helpers)
+// Quillora — Shared UI (Navbar auth + Categories + Helpers)
 // ============================================================
 import {
   auth, db, doc, getDoc, onAuthStateChanged, signOut, isAdminEmail
 } from './firebase-config.js';
+
+// ---------- 📂 Main Categories ----------
+export const MAIN_CATEGORIES = [
+  "Technology", "Business", "Finance", "Education", "Science",
+  "Health", "Lifestyle", "Career", "Travel", "Food", "Sports",
+  "Gaming", "Entertainment", "Home", "News", "Automotive",
+  "Motivation", "Design"
+];
 
 // ---------- Helpers ----------
 export function escapeHtml(str) {
@@ -16,8 +24,15 @@ export function getExcerpt(html, len = 120) {
   return t.length > len ? t.slice(0, len) + '…' : t;
 }
 export function categoryColor(cat) {
-  const c = { Technology:'#4F6EF7', Education:'#10B981', Business:'#F59E0B', Lifestyle:'#EC4899' };
-  return c[cat] || '#6B7280';
+  const c = {
+    Technology:'#4F6EF7', Business:'#F59E0B', Finance:'#10B981',
+    Education:'#8B5CF6', Science:'#06B6D4', Health:'#EF4444',
+    Lifestyle:'#EC4899', Career:'#6366F1', Travel:'#14B8A6',
+    Food:'#F97316', Sports:'#22C55E', Gaming:'#A855F7',
+    Entertainment:'#EAB308', Home:'#F43F5E', News:'#64748B',
+    Automotive:'#94A3B8', Motivation:'#FB7185', Design:'#D946EF'
+  };
+  return c[cat] || '#4F6EF7';
 }
 export function fmtDate(ts) {
   return ts?.toDate?.().toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) || '—';
@@ -40,6 +55,40 @@ export function articleCard(a, id) {
     </div>
   </article>`;
 }
+
+// ---------- 📂 Categories Dropdown (navbar එකට auto-inject) ----------
+(function injectCategoriesNav() {
+  const nav = document.querySelector('.main-nav');
+  if (!nav || nav.querySelector('.nav-dropdown')) return;
+  const drop = document.createElement('div');
+  drop.className = 'nav-dropdown';
+  drop.innerHTML = `
+    <a href="#" class="drop-toggle">Categories <span class="caret">▾</span></a>
+    <div class="dropdown-menu">
+      ${MAIN_CATEGORIES.map(c => `<a href="category.html?cat=${encodeURIComponent(c)}">${c}</a>`).join('')}
+    </div>`;
+  const about = nav.querySelector('a[href="contact.html"]');
+  if (about) nav.insertBefore(drop, about); else nav.appendChild(drop);
+
+  // Click toggle (touch devices)
+  drop.querySelector('.drop-toggle').addEventListener('click', e => {
+    e.preventDefault();
+    drop.classList.toggle('open');
+  });
+  document.addEventListener('click', e => {
+    if (!drop.contains(e.target)) drop.classList.remove('open');
+  });
+})();
+
+// ---------- 🏷️ Category Pills (homepage #categoryPills තියෙනවා නම්) ----------
+(function injectCategoryPills() {
+  const wrap = document.getElementById('categoryPills');
+  if (!wrap) return;
+  wrap.innerHTML = MAIN_CATEGORIES.map(c =>
+    `<a class="cat-pill" href="category.html?cat=${encodeURIComponent(c)}">
+       <span class="dot" style="background:${categoryColor(c)}"></span>${c}
+     </a>`).join('');
+})();
 
 // ---------- Navbar Auth Area ----------
 onAuthStateChanged(auth, async (user) => {
