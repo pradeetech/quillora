@@ -1,5 +1,5 @@
 // ============================================================
-// ArticleNest — Shared UI (Navbar auth + Helpers)
+// Quillora — Shared UI (Navbar auth + Helpers)
 // ============================================================
 import {
   auth, db, doc, getDoc, onAuthStateChanged, signOut, isAdminEmail
@@ -25,7 +25,7 @@ export function fmtDate(ts) {
 export function articleCard(a, id) {
   const img = a.coverImage
     ? `<img src="${escapeHtml(a.coverImage)}" alt="${escapeHtml(a.title)}" loading="lazy">`
-    : `<div class="card-placeholder" style="background:${categoryColor(a.category)}">${escapeHtml((a.category||'A')[0])}</div>`;
+    : `<div class="card-placeholder" style="background:${categoryColor(a.category)}">${escapeHtml((a.category||'Q')[0])}</div>`;
   return `
   <article class="article-card">
     <a href="article.html?id=${id}" class="card-image">${img}</a>
@@ -42,9 +42,6 @@ export function articleCard(a, id) {
 }
 
 // ---------- Navbar Auth Area ----------
-// Login නැත්නම්: Login / Sign Up buttons
-// Normal user: Avatar + Logout (admin link පේන්නේ නෑ!)
-// Admin: Dashboard link + Avatar + Logout
 onAuthStateChanged(auth, async (user) => {
   const area = document.getElementById('authArea');
   if (!area) return;
