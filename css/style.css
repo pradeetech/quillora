@@ -201,3 +201,40 @@ th { background:var(--light); }
   .logo img { height:38px; width:38px; }
   .logo-text { font-size:1.1rem; }
 }
+
+/* ============================================================
+   Categories Dropdown + Pills (v2.2)
+   ============================================================ */
+.nav-dropdown { position:relative; }
+.drop-toggle { display:flex; align-items:center; gap:4px; cursor:pointer; }
+.drop-toggle .caret { font-size:.7rem; transition:transform .2s; }
+.nav-dropdown.open .caret { transform:rotate(180deg); }
+.dropdown-menu {
+  display:none; position:absolute; top:100%; left:0; z-index:200;
+  background:#fff; border:1px solid var(--border); border-radius:10px;
+  box-shadow:0 12px 28px rgba(0,0,0,.12); padding:8px; min-width:420px;
+  max-height:420px; overflow-y:auto;
+  display:none; grid-template-columns:1fr 1fr; gap:2px;
+}
+.nav-dropdown:hover .dropdown-menu,
+.nav-dropdown.open .dropdown-menu { display:grid; }
+.dropdown-menu a { padding:8px 12px; border-radius:8px; font-size:.88rem; color:var(--text); font-family:'Segoe UI',sans-serif; }
+.dropdown-menu a:hover { background:var(--light); color:var(--primary); }
+
+/* Category Pills (Homepage) */
+.category-pills { display:flex; flex-wrap:wrap; gap:12px; }
+.cat-pill {
+  display:flex; align-items:center; gap:8px; padding:10px 20px;
+  border-radius:24px; background:#fff; border:1.5px solid var(--border);
+  font-family:'Segoe UI',sans-serif; font-size:.92rem; font-weight:600;
+  color:var(--text); transition:.2s;
+}
+.cat-pill:hover { border-color:var(--primary); color:var(--primary); transform:translateY(-2px); box-shadow:0 6px 14px rgba(79,110,247,.15); }
+.cat-pill .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+@media (max-width:768px) {
+  .dropdown-menu {
+    position:static; box-shadow:none; border:none; padding:4px 0 4px 12px;
+    max-height:none; grid-template-columns:1fr; background:transparent;
+  }
+}
