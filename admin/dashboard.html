@@ -38,11 +38,21 @@
         <input type="text" id="artTitle" placeholder="e.g., 10 Tech Trends to Watch in 2026">
       </div>
       <div class="form-field">
-        <label>Category *</label>
+        <label>Main Category *</label>
         <select id="artCategory">
-          <option>Technology</option><option>Education</option>
-          <option>Business</option><option>Lifestyle</option>
+          <option>Technology</option><option>Business</option>
+          <option>Finance</option><option>Education</option>
+          <option>Science</option><option>Health</option>
+          <option>Lifestyle</option><option>Career</option>
+          <option>Travel</option><option>Food</option>
+          <option>Sports</option><option>Gaming</option>
+          <option>Entertainment</option><option>Home</option>
+          <option>News</option><option>Automotive</option>
+          <option>Motivation</option><option>Design</option>
         </select>
+        <small style="color:#6b7280; font-size:.8rem; display:block; margin-top:4px;">
+          💡 Subcategories (උදා: AI, Cryptocurrency, Yoga) → පහළ "Keywords" field එකට දාන්න!
+        </small>
       </div>
       <div class="form-field">
         <label>Cover Image URL (optional)</label>
@@ -61,8 +71,8 @@
         <input type="text" id="artMetaDesc" maxlength="160" placeholder="Short summary shown in Google results">
       </div>
       <div class="form-field">
-        <label>SEO — Keywords (comma separated)</label>
-        <input type="text" id="artKeywords" placeholder="technology, trends, 2026">
+        <label>SEO — Keywords (comma separated — subcategories මෙතන දාන්න!)</label>
+        <input type="text" id="artKeywords" placeholder="e.g., ai, machine learning, chatgpt (for Technology articles)">
       </div>
       <button class="btn-save" id="saveBtn">💾 Save & Publish</button>
     </div>
