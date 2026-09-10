@@ -1,6 +1,6 @@
 // ============================================================
-// ArticleNest — Firebase Configuration & Core Exports
-// Project: articlenest-001 | GitHub: pradeetech
+// Quillora — Firebase Configuration & Core Exports
+// Project: articlenest-001 | GitHub: pradeetech/quillora
 // ============================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
@@ -42,11 +42,11 @@ export {
 // 🔒 SITE CONFIG — Non-changeable core
 // ============================================================
 export const SITE_CONFIG = {
-  brand: "ArticleNest",
-  tagline: "Your World of Ideas & Stories",
-  url: "https://pradeetech.github.io/articlenest",
+  brand: "Quillora",
+  tagline: "Where Every Story Takes Flight",
+  url: "https://pradeetech.github.io/quillora",
   categories: ["Technology", "Education", "Business", "Lifestyle"],
-  // 🔐 SECRET ADMIN EMAILS
+  // 🔐 SECRET ADMIN EMAILS — මේ email එකෙන් register කරොත් silent admin!
   adminEmails: ["siriyalathaaththanayaka22@gmail.com"]
 };
 
