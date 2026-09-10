@@ -3,10 +3,22 @@
   <url><loc>https://pradeetech.github.io/quillora/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
   <url><loc>https://pradeetech.github.io/quillora/contact.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://pradeetech.github.io/quillora/privacy.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Technology</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Education</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Business</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Lifestyle</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <!-- අලුත් article එකක් publish කරන හැම වෙලාම මෙතනට add කරන්න:
-  <url><loc>https://pradeetech.github.io/quillora/article.html?id=ARTICLE_ID</loc><priority>0.9</priority></url> -->
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Technology</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Business</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Finance</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Education</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Science</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Health</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Lifestyle</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Career</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Travel</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Food</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Sports</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Gaming</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Entertainment</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Home</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=News</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Automotive</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Motivation</loc><priority>0.8</priority></url>
+  <url><loc>https://pradeetech.github.io/quillora/category.html?cat=Design</loc><priority>0.8</priority></url>
 </urlset>
