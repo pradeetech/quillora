@@ -139,3 +139,16 @@ document.getElementById('menuToggle')?.addEventListener('click', () => {
 });
 const y = document.getElementById('year');
 if (y) y.textContent = new Date().getFullYear();
+
+// ---------- 📊 Google Analytics GA4 ----------
+(function initGA4() {
+  const GA_ID = 'G-HHG4Q8ZVSN';
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ window.dataLayer.push(arguments); };
+  gtag('js', new Date());
+  gtag('config', GA_ID);
+})();
