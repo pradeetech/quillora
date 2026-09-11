@@ -177,7 +177,6 @@ async function renderComments(articleId) {
         : cs.docs.map(d => {
             const c = d.data();
             const mine = cu && c.uid === cu.uid;
-            const isAdminUser = mine; // (admin delete: Firestore console එකෙන් පුළුවන්)
             return `
             <div class="comment-item">
               <div class="comment-avatar">${escapeHtml((c.name||'?')[0].toUpperCase())}</div>
@@ -191,7 +190,6 @@ async function renderComments(articleId) {
               </div>
             </div>`;
           }).join('');
-      // Delete handlers
       list.querySelectorAll('.comment-del').forEach(btn => {
         btn.addEventListener('click', async () => {
           if (!confirm('Delete this comment?')) return;
