@@ -1,9 +1,10 @@
 // ============================================================
 // Quillora — Public Pages (Home / Article / Category / Search)
+// Includes: Bookmarks + Related Articles + Newsletter
 // ============================================================
 import {
-  auth, db, collection, getDocs, getDoc, doc, query, orderBy, where, limit,
-  startAfter, increment, updateDoc, setDoc, arrayUnion, arrayRemove
+  auth, db, collection, getDocs, getDoc, doc, addDoc, query, orderBy, where, limit,
+  startAfter, increment, updateDoc, setDoc, arrayUnion, arrayRemove, serverTimestamp
 } from './firebase-config.js';
 import { articleCard, escapeHtml, getExcerpt, fmtDate } from './shared.js';
 
@@ -87,12 +88,57 @@ async function initArticle() {
           <a class="share-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=${title}%20${url}">💬 WhatsApp</a>
           <a class="share-btn tw" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${title}&url=${url}">🐦 Twitter/X</a>
         </div>
+      </div>
+      <div class="related-section" id="relatedArticles">
+        <h4>📚 You May Also Like</h4>
+        <div class="article-grid related-grid" style="margin-top:16px;">
+          <div class="loading">Finding related articles…</div>
+        </div>
       </div>`;
 
     document.getElementById('bookmarkBtn')?.addEventListener('click', () => toggleSave(id));
+
+    // ---------- 📚 Related Articles (same category, sorted by views) ----------
+    loadRelated(a, id);
   } catch (e) {
     console.error(e);
     box.innerHTML = '<div class="empty">⚠️ Failed to load article.</div>';
+  }
+}
+
+// ---------- 📚 Related Articles Loader ----------
+async function loadRelated(article, excludeId) {
+  const rwrap = document.getElementById('relatedArticles');
+  if (!rwrap) return;
+  const grid = rwrap.querySelector('.related-grid');
+  try {
+    // පළවෙනි attempt: same category + views order
+    const rq = query(collection(db,'articles'),
+      where('published','==',true),
+      where('category','==',article.category || 'Technology'),
+      orderBy('views','desc'), limit(4));
+    const rs = await getDocs(rq);
+    const related = rs.docs.filter(d => d.id !== excludeId).slice(0, 3);
+    grid.innerHTML = related.length
+      ? related.map(d => articleCard(d.data(), d.id)).join('')
+      : '<div class="empty" style="padding:16px;">More stories coming soon! ✨</div>';
+  } catch (err) {
+    console.warn('related (indexed query failed, trying fallback):', err);
+    // 🔄 Fallback: index නැත්නම් — category filter විතරක් (order නැතුව)
+    try {
+      const fq = query(collection(db,'articles'),
+        where('published','==',true),
+        where('category','==',article.category || 'Technology'),
+        limit(6));
+      const fs = await getDocs(fq);
+      const related = fs.docs.filter(d => d.id !== excludeId).slice(0, 3);
+      grid.innerHTML = related.length
+        ? related.map(d => articleCard(d.data(), d.id)).join('')
+        : '<div class="empty" style="padding:16px;">More stories coming soon! ✨</div>';
+    } catch (err2) {
+      grid.innerHTML = '<div class="empty" style="padding:16px;">⚠️ Could not load related articles.</div>';
+      console.error('related fallback failed:', err2);
+    }
   }
 }
 
