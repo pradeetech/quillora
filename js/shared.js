@@ -152,3 +152,16 @@ if (y) y.textContent = new Date().getFullYear();
   gtag('js', new Date());
   gtag('config', GA_ID);
 })();
+
+// ---------- 📊 Reading Progress Bar (article pages) ----------
+if (location.pathname.split('/').pop() === 'article.html') {
+  const bar = document.createElement('div');
+  bar.id = 'readProgress';
+  document.body.appendChild(bar);
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const total = h.scrollHeight - h.clientHeight;
+    const pct = total > 0 ? (h.scrollTop / total) * 100 : 0;
+    bar.style.width = pct + '%';
+  }, { passive: true });
+}
