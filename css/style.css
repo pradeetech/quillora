@@ -296,6 +296,34 @@ body.dark-mode .dark-toggle:hover { background:#252a4a; }
 .related-grid .card-placeholder { height:140px; font-size:2.2rem; }
 .related-grid .card-body { padding:14px; }
 .related-grid .card-body h3 { font-size:1rem; }
+
+/* ---------- 💬 COMMENTS ---------- */
+.comments-section { border-top:1px solid var(--border); margin-top:36px; padding-top:24px; }
+.comments-section h4 { font-family:'Segoe UI',sans-serif; font-size:1.15rem; margin-bottom:14px; }
+.comments-list { margin-top:18px; }
+.comment-item { display:flex; gap:14px; padding:16px 0; border-bottom:1px solid var(--border); }
+.comment-item:last-child { border-bottom:none; }
+.comment-avatar {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--gradient); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-family:'Segoe UI',sans-serif; flex-shrink:0;
+}
+.comment-body { flex:1; min-width:0; }
+.comment-head {
+  display:flex; align-items:center; gap:8px;
+  font-family:'Segoe UI',sans-serif; font-size:.9rem; flex-wrap:wrap;
+}
+.comment-body p { margin:6px 0 0; font-size:.98rem; word-wrap:break-word; }
+.comment-del {
+  background:none; border:none; cursor:pointer;
+  margin-left:auto; opacity:.55; font-size:.85rem;
+  transition:opacity .2s;
+}
+.comment-del:hover { opacity:1; }
+body.dark-mode .comment-item { border-color:#2d3250; }
+body.dark-mode .comments-section { border-color:#2d3250; }
+body.dark-mode .comments-section h4 { color:#f3f4f6; }
 .related-grid .card-excerpt { display:none; }
 .related-grid .card-meta { margin-top:8px; font-size:.78rem; }
 body.dark-mode .related-section { border-color:#2d3250; }
