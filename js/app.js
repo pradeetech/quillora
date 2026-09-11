@@ -1,9 +1,9 @@
 // ============================================================
 // Quillora — Public Pages (Home / Article / Category / Search)
-// Includes: Bookmarks + Related Articles + Newsletter
+// Includes: Bookmarks + Related Articles + Comments + Newsletter
 // ============================================================
 import {
-  auth, db, collection, getDocs, getDoc, doc, addDoc, query, orderBy, where, limit,
+  auth, db, collection, getDocs, getDoc, doc, addDoc, deleteDoc, query, orderBy, where, limit,
   startAfter, increment, updateDoc, setDoc, arrayUnion, arrayRemove, serverTimestamp
 } from './firebase-config.js';
 import { articleCard, escapeHtml, getExcerpt, fmtDate } from './shared.js';
@@ -94,12 +94,16 @@ async function initArticle() {
         <div class="article-grid related-grid" style="margin-top:16px;">
           <div class="loading">Finding related articles…</div>
         </div>
-      </div>`;
+      </div>
+      <div id="commentsMount"></div>`;
 
     document.getElementById('bookmarkBtn')?.addEventListener('click', () => toggleSave(id));
 
-    // ---------- 📚 Related Articles (same category, sorted by views) ----------
+    // 📚 Related Articles
     loadRelated(a, id);
+
+    // 💬 Comments
+    renderComments(id);
   } catch (e) {
     console.error(e);
     box.innerHTML = '<div class="empty">⚠️ Failed to load article.</div>';
@@ -112,7 +116,6 @@ async function loadRelated(article, excludeId) {
   if (!rwrap) return;
   const grid = rwrap.querySelector('.related-grid');
   try {
-    // පළවෙනි attempt: same category + views order
     const rq = query(collection(db,'articles'),
       where('published','==',true),
       where('category','==',article.category || 'Technology'),
@@ -123,8 +126,7 @@ async function loadRelated(article, excludeId) {
       ? related.map(d => articleCard(d.data(), d.id)).join('')
       : '<div class="empty" style="padding:16px;">More stories coming soon! ✨</div>';
   } catch (err) {
-    console.warn('related (indexed query failed, trying fallback):', err);
-    // 🔄 Fallback: index නැත්නම් — category filter විතරක් (order නැතුව)
+    console.warn('related (fallback):', err);
     try {
       const fq = query(collection(db,'articles'),
         where('published','==',true),
@@ -137,9 +139,104 @@ async function loadRelated(article, excludeId) {
         : '<div class="empty" style="padding:16px;">More stories coming soon! ✨</div>';
     } catch (err2) {
       grid.innerHTML = '<div class="empty" style="padding:16px;">⚠️ Could not load related articles.</div>';
-      console.error('related fallback failed:', err2);
     }
   }
+}
+
+// ==================== 💬 COMMENTS ====================
+async function renderComments(articleId) {
+  const mount = document.getElementById('commentsMount');
+  if (!mount) return;
+  const u = auth.currentUser;
+  const box = document.createElement('div');
+  box.className = 'comments-section';
+  box.innerHTML = `
+    <h4>💬 Comments</h4>
+    ${u ? `
+    <div class="form-field">
+      <textarea id="commentText" rows="3" placeholder="Share your thoughts…" style="width:100%; padding:12px 14px; border:2px solid var(--border); border-radius:8px; font-family:inherit; font-size:.95rem; outline:none; resize:vertical;"></textarea>
+      <button class="btn primary" id="commentSubmit" style="margin-top:10px;">Post Comment</button>
+    </div>` : `
+    <p class="muted" style="padding:12px 0;">
+      <a href="login.html?next=${encodeURIComponent(location.pathname+location.search)}" style="color:var(--primary); font-weight:600;">Log in</a>
+      to join the discussion.
+    </p>`}
+    <div id="commentsList" class="comments-list"><div class="loading">Loading comments…</div></div>`;
+  mount.appendChild(box);
+
+  const list = document.getElementById('commentsList');
+
+  // ---------- Load comments ----------
+  async function loadComments() {
+    try {
+      const cq = query(collection(db,'comments'), where('articleId','==',articleId), orderBy('createdAt','desc'), limit(50));
+      const cs = await getDocs(cq);
+      const cu = auth.currentUser;
+      list.innerHTML = cs.empty
+        ? '<div class="empty" style="padding:16px;">No comments yet — be the first! ✨</div>'
+        : cs.docs.map(d => {
+            const c = d.data();
+            const mine = cu && c.uid === cu.uid;
+            const isAdminUser = mine; // (admin delete: Firestore console එකෙන් පුළුවන්)
+            return `
+            <div class="comment-item">
+              <div class="comment-avatar">${escapeHtml((c.name||'?')[0].toUpperCase())}</div>
+              <div class="comment-body">
+                <div class="comment-head">
+                  <strong>${escapeHtml(c.name)}</strong>
+                  <span class="muted">· ${fmtDate(c.createdAt)}</span>
+                  ${mine ? `<button class="comment-del" data-id="${d.id}" title="Delete comment">🗑️</button>` : ''}
+                </div>
+                <p>${escapeHtml(c.text)}</p>
+              </div>
+            </div>`;
+          }).join('');
+      // Delete handlers
+      list.querySelectorAll('.comment-del').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Delete this comment?')) return;
+          try {
+            await deleteDoc(doc(db,'comments',btn.dataset.id));
+            loadComments();
+          } catch (e) { alert('Failed to delete: ' + e.message); }
+        });
+      });
+    } catch (e) {
+      console.warn('comments load:', e);
+      list.innerHTML = '<div class="empty" style="padding:16px;">⚠️ Could not load comments.</div>';
+    }
+  }
+  loadComments();
+
+  // ---------- Submit comment ----------
+  document.getElementById('commentSubmit')?.addEventListener('click', async () => {
+    const ta = document.getElementById('commentText');
+    const text = ta.value.trim();
+    if (text.length < 2) return alert('Comment is too short!');
+    const u2 = auth.currentUser;
+    if (!u2) return location.href = 'login.html?next=' + encodeURIComponent(location.pathname+location.search);
+    const btn = document.getElementById('commentSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Posting…';
+    try {
+      let name = u2.displayName || u2.email.split('@')[0];
+      try {
+        const ps = await getDoc(doc(db,'users',u2.uid));
+        if (ps.exists() && ps.data().name) name = ps.data().name;
+      } catch {}
+      await addDoc(collection(db,'comments'), {
+        articleId, uid: u2.uid, name, text,
+        createdAt: serverTimestamp()
+      });
+      ta.value = '';
+      loadComments();
+    } catch (e) {
+      alert('Failed to post comment: ' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Post Comment';
+    }
+  });
 }
 
 // ==================== 🤍 Bookmarks ====================
@@ -227,6 +324,26 @@ function injectJsonLd(a, desc) {
   });
   document.head.appendChild(s);
 }
+
+// ==================== 📧 NEWSLETTER ====================
+document.getElementById('newsletterForm')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('newsletterEmail').value.trim().toLowerCase();
+  const msg = document.getElementById('newsletterMsg');
+  try {
+    await addDoc(collection(db, 'subscribers'), {
+      email, subscribedAt: serverTimestamp()
+    });
+    msg.textContent = '🎉 Subscribed! Welcome to the Quillora family.';
+    msg.style.display = 'block';
+    msg.style.color = '#16a34a';
+    e.target.reset();
+  } catch (err) {
+    msg.textContent = '⚠️ Something went wrong — try again.';
+    msg.style.display = 'block';
+    msg.style.color = '#dc2626';
+  }
+});
 
 // ==================== Router ====================
 if (page === 'index.html' || page === '') initHome();
