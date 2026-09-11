@@ -287,3 +287,15 @@ body.dark-mode .bookmark-btn { background:#1a1d36; color:#d1d5db; }
 }
 .dark-toggle:hover { background:var(--light); }
 body.dark-mode .dark-toggle:hover { background:#252a4a; }
+
+/* ---------- 🔗 RELATED ARTICLES ---------- */
+.related-section { border-top:1px solid var(--border); margin-top:36px; padding-top:24px; }
+.related-section h4 { font-family:'Segoe UI',sans-serif; font-size:1.15rem; }
+.related-grid { grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px; }
+.related-grid .card-image img { height:140px; }
+.related-grid .card-placeholder { height:140px; font-size:2.2rem; }
+.related-grid .card-body { padding:14px; }
+.related-grid .card-body h3 { font-size:1rem; }
+.related-grid .card-excerpt { display:none; }
+.related-grid .card-meta { margin-top:8px; font-size:.78rem; }
+body.dark-mode .related-section { border-color:#2d3250; }
