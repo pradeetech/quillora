@@ -238,3 +238,10 @@ th { background:var(--light); }
     max-height:none; grid-template-columns:1fr; background:transparent;
   }
 }
+
+/* ---------- READING PROGRESS BAR ---------- */
+#readProgress {
+  position:fixed; top:0; left:0; height:4px; width:0%;
+  background:var(--gradient); z-index:9999;
+  transition:width .1s ease; border-radius:0 2px 2px 0;
+}
