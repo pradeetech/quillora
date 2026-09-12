@@ -147,3 +147,20 @@ window.deleteArticle = async id => {
 };
 
 loadTable();
+
+// ---------- 🌙 Dark Mode Toggle (Admin) ----------
+// Same localStorage key — main site එකේ dark නම් admin එකත් dark!
+(function initAdminDarkMode() {
+  const btn = document.getElementById('darkToggle');
+  if (!btn) return;
+  const saved = localStorage.getItem('quillora-theme');
+  if (saved === 'dark') {
+    document.body.classList.add('dark-mode');
+    btn.textContent = '☀️';
+  }
+  btn.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark-mode');
+    btn.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('quillora-theme', isDark ? 'dark' : 'light');
+  });
+})();
