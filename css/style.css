@@ -337,3 +337,6 @@ body.dark-mode .dark-toggle:hover { background:#252a4a; }
   }
   .newsletter-box { padding:36px 16px; }
 }
+
+/* ---------- 📡 RSS BROWSER VIEW (rss.xml JS render) ---------- */
+body:has(> rss) { font-family:'Segoe UI',monospace; background:#1e1e2e; color:#cdd6f4; padding:20px; white-space:pre-wrap; word-break:break-all; }
