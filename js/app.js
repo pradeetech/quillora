@@ -348,3 +348,45 @@ if (page === 'index.html' || page === '') initHome();
 else if (page === 'article.html') initArticle();
 else if (page === 'category.html') initCategory();
 else if (page === 'search.html') initSearch();
+else if (page === 'rss.xml') generateRSS();
+
+// ==================== 📡 RSS AUTO-GENERATOR ====================
+// rss.xml URL එකට යවද්දීම latest published articles 20ක්
+// RSS 2.0 XML format එකෙන් render කරනවා — RSS readers වලට!
+async function generateRSS() {
+  try {
+    const q = query(collection(db,'articles'), where('published','==',true), orderBy('createdAt','desc'), limit(20));
+    const s = await getDocs(q);
+    // XML-safe escaping
+    const esc = t => String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const items = s.docs.map(d => {
+      const a = d.data();
+      const url = `https://pradeetech.github.io/quillora/article.html?id=${d.id}`;
+      const date = a.createdAt?.toDate?.().toUTCString() || new Date().toUTCString();
+      return `    <item>
+      <title>${esc(a.title)}</title>
+      <link>${url}</link>
+      <guid isPermaLink="true">${url}</guid>
+      <description>${esc(a.metaDescription || getExcerpt(a.content, 200))}</description>
+      <category>${esc(a.category || 'General')}</category>
+      <pubDate>${date}</pubDate>
+    </item>`;
+    }).join('\n');
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Quillora — Where Every Story Takes Flight</title>
+    <link>https://pradeetech.github.io/quillora/</link>
+    <description>Insightful articles on Technology, Business, Finance, Education, Science, Health, Lifestyle and more.</description>
+    <language>en</language>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+ ${items}
+  </channel>
+</rss>`;
+    // Browser එකට raw XML output (GitHub Pages SPA එකක් නිසා JS render)
+    document.documentElement.innerHTML = xml;
+  } catch (e) {
+    console.error('RSS:', e);
+    document.body.textContent = 'RSS temporarily unavailable';
+  }
+}
