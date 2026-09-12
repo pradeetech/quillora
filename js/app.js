@@ -1,6 +1,6 @@
 // ============================================================
 // Quillora — Public Pages (Home / Article / Category / Search)
-// Includes: Bookmarks + Related Articles + Comments + Newsletter
+// Includes: Bookmarks + Related + Comments + Newsletter + RSS
 // ============================================================
 import {
   auth, db, collection, getDocs, getDoc, doc, addDoc, deleteDoc, query, orderBy, where, limit,
@@ -87,6 +87,7 @@ async function initArticle() {
           <a class="share-btn fb" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${url}">📘 Facebook</a>
           <a class="share-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=${title}%20${url}">💬 WhatsApp</a>
           <a class="share-btn tw" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${title}&url=${url}">🐦 Twitter/X</a>
+          <button class="share-btn cp" id="copyLinkBtn">🔗 Copy Link</button>
         </div>
       </div>
       <div class="related-section" id="relatedArticles">
@@ -98,6 +99,23 @@ async function initArticle() {
       <div id="commentsMount"></div>`;
 
     document.getElementById('bookmarkBtn')?.addEventListener('click', () => toggleSave(id));
+
+    // 🔗 Copy Link
+    document.getElementById('copyLinkBtn')?.addEventListener('click', async function() {
+      try {
+        await navigator.clipboard.writeText(location.href);
+        this.textContent = '✅ Copied!';
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = location.href;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        this.textContent = '✅ Copied!';
+      }
+      setTimeout(() => { this.textContent = '🔗 Copy Link'; }, 2000);
+    });
 
     // 📚 Related Articles
     loadRelated(a, id);
@@ -166,7 +184,6 @@ async function renderComments(articleId) {
 
   const list = document.getElementById('commentsList');
 
-  // ---------- Load comments ----------
   async function loadComments() {
     try {
       const cq = query(collection(db,'comments'), where('articleId','==',articleId), orderBy('createdAt','desc'), limit(50));
@@ -206,7 +223,6 @@ async function renderComments(articleId) {
   }
   loadComments();
 
-  // ---------- Submit comment ----------
   document.getElementById('commentSubmit')?.addEventListener('click', async () => {
     const ta = document.getElementById('commentText');
     const text = ta.value.trim();
@@ -343,21 +359,13 @@ document.getElementById('newsletterForm')?.addEventListener('submit', async e =>
   }
 });
 
-// ==================== Router ====================
-if (page === 'index.html' || page === '') initHome();
-else if (page === 'article.html') initArticle();
-else if (page === 'category.html') initCategory();
-else if (page === 'search.html') initSearch();
-else if (page === 'rss.xml') generateRSS();
-
-// ==================== 📡 RSS AUTO-GENERATOR ====================
-// rss.xml URL එකට යවද්දීම latest published articles 20ක්
-// RSS 2.0 XML format එකෙන් render කරනවා — RSS readers වලට!
+// ==================== 📡 RSS LIVE GENERATOR ====================
+// Browser එකෙන් rss.xml open කරද්දී latest articles 20ක් XML render කරනවා
+// (RSS readers static file එක fetch කරන නිසා ඒවට static updates routine එකෙන්!)
 async function generateRSS() {
   try {
     const q = query(collection(db,'articles'), where('published','==',true), orderBy('createdAt','desc'), limit(20));
     const s = await getDocs(q);
-    // XML-safe escaping
     const esc = t => String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     const items = s.docs.map(d => {
       const a = d.data();
@@ -383,10 +391,16 @@ async function generateRSS() {
  ${items}
   </channel>
 </rss>`;
-    // Browser එකට raw XML output (GitHub Pages SPA එකක් නිසා JS render)
     document.documentElement.innerHTML = xml;
   } catch (e) {
     console.error('RSS:', e);
     document.body.textContent = 'RSS temporarily unavailable';
   }
 }
+
+// ==================== Router ====================
+if (page === 'index.html' || page === '') initHome();
+else if (page === 'article.html') initArticle();
+else if (page === 'category.html') initCategory();
+else if (page === 'search.html') initSearch();
+else if (page === 'rss.xml') generateRSS();
