@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Quillora — Where Every Story Takes Flight</title>
+    <link>https://pradeetech.github.io/quillora/</link>
+    <description>Insightful articles on Technology, Business, Finance, Education, Science, Health, Lifestyle and more.</description>
+    <language>en</language>
+    <item>
+      <title>Welcome to Quillora</title>
+      <link>https://pradeetech.github.io/quillora/</link>
+      <description>Your journey of ideas starts here.</description>
+    </item>
+  </channel>
+</rss>
