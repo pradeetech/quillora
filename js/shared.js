@@ -183,30 +183,33 @@ if (location.pathname.split('/').pop() === 'article.html') {
 })();
 
 // ---------- 📲 OneSignal Push Notifications ----------
-// OneSignal dashboard එකෙන් ලැබෙන App ID එක මෙතන දාන්න!
-if (true) {
-  window.OneSignal = window.OneSignal || [];
-  window.OneSignal.push(() => {
-    window.OneSignal.init({
-      appId: "fd3a74aa-6af9-4610-babe-1dea408a8d62",
-      notifyButton: { enable: true },
-      promptOptions: {
-        slidedown: {
-          prompts: [{
-            type: "push",
-            autoPrompt: true,
-            text: {
-              actionMessage: "අලුත් articles ලැබෙනකොට notification එකක් ගන්නද?",
-              acceptButton: "Subscribe",
-              cancelButton: "Not now"
-            }
-          }]
-        }
-      }
-    });
-  });
+// SDK script එක HEAD එකේම load → ඊට පස්සේ init (race condition fix!)
+(function initOneSignal() {
   const os = document.createElement('script');
   os.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
   os.defer = true;
+  os.onload = function() {
+    // SDK load වුණාට පස්සේ විතරයි init — මේ order එක තමයි හරි!
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "fd3a74aa-6af9-4610-babe-1dea408a8d62",
+        notifyButton: { enable: true },
+        promptOptions: {
+          slidedown: {
+            prompts: [{
+              type: "push",
+              autoPrompt: true,
+              text: {
+                actionMessage: "අලුත් articles ලැබෙනකොට notification එකක් ගන්නද?",
+                acceptButton: "Subscribe",
+                cancelButton: "Not now"
+              }
+            }]
+          }
+        }
+      });
+    });
+  };
   document.head.appendChild(os);
-}
+})();
