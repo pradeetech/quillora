@@ -27,5 +27,5 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add sitemap.xml rss.xml
+          git add sitemap.xml rss.xml scripts/article-ids.json
           git diff --staged --quiet || (git commit -m "Auto-update sitemap & RSS feeds [skip ci]" && git push)
