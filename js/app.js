@@ -1,6 +1,7 @@
 // ============================================================
 // Quillora — Public Pages (Home / Article / Category / Search)
 // Includes: Bookmarks + Related + Comments + Newsletter + RSS
+// Icons: Hybrid (Social = img files | UI = inline SVG)
 // ============================================================
 import {
   auth, db, collection, getDocs, getDoc, doc, addDoc, deleteDoc, query, orderBy, where, limit,
@@ -11,6 +12,22 @@ import { articleCard, escapeHtml, getExcerpt, fmtDate } from './shared.js';
 const params = new URLSearchParams(location.search);
 const page = (location.pathname.split('/').pop() || 'index.html');
 
+// ---------- 🎨 ICONS Library (Social = img | UI = SVG) ----------
+const ICONS = {
+  calendar: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10zM5 7V5h14v2H5z"/></svg>`,
+  eye: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`,
+  clock: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,
+  heartOutline: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
+  heartFill: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
+  facebook: `<img src="img/social/facebook-white.png" width="16" height="16" alt="">`,
+  whatsapp: `<img src="img/social/whatsapp-white.png" width="16" height="16" alt="">`,
+  x: `<img src="img/social/x-white.png" width="14" height="14" alt="">`,
+  link: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>`,
+  book: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#4F6EF7"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>`,
+  chat: `<svg width="18" height="18" viewBox="0 0 24 24" fill="#7C3AED"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>`,
+  trash: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`
+};
+
 // ==================== HOME ====================
 async function initHome() {
   const tGrid = document.getElementById('trendingGrid');
@@ -19,7 +36,7 @@ async function initHome() {
   try {
     const tq = query(collection(db,'articles'), where('published','==',true), orderBy('views','desc'), limit(3));
     const ts = await getDocs(tq);
-    tGrid.innerHTML = ts.empty ? '<div class="empty">No articles yet — coming soon! ✨</div>'
+    tGrid.innerHTML = ts.empty ? '<div class="empty">No articles yet — coming soon!</div>'
       : ts.docs.map(d => articleCard(d.data(), d.id)).join('');
     let last = null;
     async function loadLatest(reset) {
@@ -27,7 +44,7 @@ async function initHome() {
       if (last) q = query(collection(db,'articles'), where('published','==',true), orderBy('createdAt','desc'), startAfter(last), limit(6));
       const s = await getDocs(q);
       if (reset) lGrid.innerHTML = '';
-      if (s.empty && reset) { lGrid.innerHTML = '<div class="empty">No articles yet — coming soon! ✨</div>'; return; }
+      if (s.empty && reset) { lGrid.innerHTML = '<div class="empty">No articles yet — coming soon!</div>'; return; }
       lGrid.insertAdjacentHTML('beforeend', s.docs.map(d => articleCard(d.data(), d.id)).join(''));
       last = s.docs[s.docs.length-1] || last;
       if (btn) btn.style.display = s.size === 6 ? 'inline-block' : 'none';
@@ -36,7 +53,7 @@ async function initHome() {
     btn?.addEventListener('click', () => loadLatest(false));
   } catch (e) {
     console.error(e);
-    tGrid.innerHTML = lGrid.innerHTML = '<div class="empty">⚠️ Database error — Firebase index/settings check කරන්න.</div>';
+    tGrid.innerHTML = lGrid.innerHTML = '<div class="empty">Database error — Firebase settings check කරන්න.</div>';
   }
 }
 
@@ -49,7 +66,7 @@ async function initArticle() {
     const ref = doc(db, 'articles', id);
     const snap = await getDoc(ref);
     if (!snap.exists() || !snap.data().published) {
-      box.innerHTML = '<div class="empty">Article not found. <a href="index.html">← Back to Home</a></div>';
+      box.innerHTML = '<div class="empty">Article not found. <a href="index.html">Back to Home</a></div>';
       return;
     }
     const a = snap.data();
@@ -74,9 +91,11 @@ async function initArticle() {
         <span class="card-category">${escapeHtml(a.category || 'General')}</span>
         <h1>${escapeHtml(a.title)}</h1>
         <div class="article-meta">
-          📅 ${fmtDate(a.createdAt)} · 👁️ ${(a.views||0)+1} views · ⏱️ ${readTime(a.content)} min read
+          <span class="meta-item">${ICONS.calendar} ${fmtDate(a.createdAt)}</span>
+          <span class="meta-item">${ICONS.eye} ${(a.views||0)+1} views</span>
+          <span class="meta-item">${ICONS.clock} ${readTime(a.content)} min read</span>
         </div>
-        <button class="bookmark-btn ${saved ? 'saved' : ''}" id="bookmarkBtn">${saved ? '❤️ Saved' : '🤍 Save'}</button>
+        <button class="bookmark-btn ${saved ? 'saved' : ''}" id="bookmarkBtn">${saved ? ICONS.heartFill + ' Saved' : ICONS.heartOutline + ' Save'}</button>
       </div>
       ${a.coverImage ? `<img class="article-cover" src="${escapeHtml(a.coverImage)}" alt="${escapeHtml(a.title)}">` : ''}
       <div class="article-body">${a.content}</div>
@@ -84,14 +103,14 @@ async function initArticle() {
       <div class="share-section">
         <h4>Share this article</h4>
         <div class="share-buttons">
-          <a class="share-btn fb" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${url}">📘 Facebook</a>
-          <a class="share-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=${title}%20${url}">💬 WhatsApp</a>
-          <a class="share-btn tw" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${title}&url=${url}">🐦 Twitter/X</a>
-          <button class="share-btn cp" id="copyLinkBtn">🔗 Copy Link</button>
+          <a class="share-btn fb" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${url}">${ICONS.facebook}Facebook</a>
+          <a class="share-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=${title}%20${url}">${ICONS.whatsapp}WhatsApp</a>
+          <a class="share-btn tw" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${title}&url=${url}">${ICONS.x}Twitter/X</a>
+          <button class="share-btn cp" id="copyLinkBtn">${ICONS.link}Copy Link</button>
         </div>
       </div>
       <div class="related-section" id="relatedArticles">
-        <h4>📚 You May Also Like</h4>
+        <h4>${ICONS.book} You May Also Like</h4>
         <div class="article-grid related-grid" style="margin-top:16px;">
           <div class="loading">Finding related articles…</div>
         </div>
@@ -104,7 +123,7 @@ async function initArticle() {
     document.getElementById('copyLinkBtn')?.addEventListener('click', async function() {
       try {
         await navigator.clipboard.writeText(location.href);
-        this.textContent = '✅ Copied!';
+        this.innerHTML = 'Copied!';
       } catch {
         const ta = document.createElement('textarea');
         ta.value = location.href;
@@ -112,9 +131,9 @@ async function initArticle() {
         ta.select();
         document.execCommand('copy');
         ta.remove();
-        this.textContent = '✅ Copied!';
+        this.innerHTML = 'Copied!';
       }
-      setTimeout(() => { this.textContent = '🔗 Copy Link'; }, 2000);
+      setTimeout(() => { this.innerHTML = ICONS.link + 'Copy Link'; }, 2000);
     });
 
     // 📚 Related Articles
@@ -124,7 +143,7 @@ async function initArticle() {
     renderComments(id);
   } catch (e) {
     console.error(e);
-    box.innerHTML = '<div class="empty">⚠️ Failed to load article.</div>';
+    box.innerHTML = '<div class="empty">Failed to load article.</div>';
   }
 }
 
@@ -142,7 +161,7 @@ async function loadRelated(article, excludeId) {
     const related = rs.docs.filter(d => d.id !== excludeId).slice(0, 3);
     grid.innerHTML = related.length
       ? related.map(d => articleCard(d.data(), d.id)).join('')
-      : '<div class="empty" style="padding:16px;">More stories coming soon! ✨</div>';
+      : '<div class="empty" style="padding:16px;">More stories coming soon!</div>';
   } catch (err) {
     console.warn('related (fallback):', err);
     try {
@@ -154,9 +173,9 @@ async function loadRelated(article, excludeId) {
       const related = fs.docs.filter(d => d.id !== excludeId).slice(0, 3);
       grid.innerHTML = related.length
         ? related.map(d => articleCard(d.data(), d.id)).join('')
-        : '<div class="empty" style="padding:16px;">More stories coming soon! ✨</div>';
+        : '<div class="empty" style="padding:16px;">More stories coming soon!</div>';
     } catch (err2) {
-      grid.innerHTML = '<div class="empty" style="padding:16px;">⚠️ Could not load related articles.</div>';
+      grid.innerHTML = '<div class="empty" style="padding:16px;">Could not load related articles.</div>';
     }
   }
 }
@@ -169,7 +188,7 @@ async function renderComments(articleId) {
   const box = document.createElement('div');
   box.className = 'comments-section';
   box.innerHTML = `
-    <h4>💬 Comments</h4>
+    <h4>${ICONS.chat} Comments</h4>
     ${u ? `
     <div class="form-field">
       <textarea id="commentText" rows="3" placeholder="Share your thoughts…" style="width:100%; padding:12px 14px; border:2px solid var(--border); border-radius:8px; font-family:inherit; font-size:.95rem; outline:none; resize:vertical;"></textarea>
@@ -190,7 +209,7 @@ async function renderComments(articleId) {
       const cs = await getDocs(cq);
       const cu = auth.currentUser;
       list.innerHTML = cs.empty
-        ? '<div class="empty" style="padding:16px;">No comments yet — be the first! ✨</div>'
+        ? '<div class="empty" style="padding:16px;">No comments yet — be the first!</div>'
         : cs.docs.map(d => {
             const c = d.data();
             const mine = cu && c.uid === cu.uid;
@@ -201,7 +220,7 @@ async function renderComments(articleId) {
                 <div class="comment-head">
                   <strong>${escapeHtml(c.name)}</strong>
                   <span class="muted">· ${fmtDate(c.createdAt)}</span>
-                  ${mine ? `<button class="comment-del" data-id="${d.id}" title="Delete comment">🗑️</button>` : ''}
+                  ${mine ? `<button class="comment-del" data-id="${d.id}" title="Delete comment">${ICONS.trash}</button>` : ''}
                 </div>
                 <p>${escapeHtml(c.text)}</p>
               </div>
@@ -218,7 +237,7 @@ async function renderComments(articleId) {
       });
     } catch (e) {
       console.warn('comments load:', e);
-      list.innerHTML = '<div class="empty" style="padding:16px;">⚠️ Could not load comments.</div>';
+      list.innerHTML = '<div class="empty" style="padding:16px;">Could not load comments.</div>';
     }
   }
   loadComments();
@@ -276,7 +295,7 @@ async function toggleSave(id) {
   }
   const btn = document.getElementById('bookmarkBtn');
   btn.classList.toggle('saved', !saved);
-  btn.textContent = saved ? '🤍 Save' : '❤️ Saved';
+  btn.innerHTML = saved ? ICONS.heartOutline + ' Save' : ICONS.heartFill + ' Saved';
 }
 
 // ==================== CATEGORY ====================
@@ -288,9 +307,9 @@ async function initCategory() {
   try {
     const q = query(collection(db,'articles'), where('published','==',true), where('category','==',cat), orderBy('createdAt','desc'));
     const s = await getDocs(q);
-    grid.innerHTML = s.empty ? `<div class="empty">No ${escapeHtml(cat)} articles yet. ✨</div>`
+    grid.innerHTML = s.empty ? `<div class="empty">No ${escapeHtml(cat)} articles yet.</div>`
       : s.docs.map(d => articleCard(d.data(), d.id)).join('');
-  } catch (e) { console.error(e); grid.innerHTML = '<div class="empty">⚠️ Failed to load category.</div>'; }
+  } catch (e) { console.error(e); grid.innerHTML = '<div class="empty">Failed to load category.</div>'; }
 }
 
 // ==================== SEARCH ====================
@@ -299,7 +318,7 @@ async function initSearch() {
   const term = (params.get('q') || '').trim();
   document.getElementById('searchTerm').textContent = term || '…';
   document.title = `Search: ${term} | Quillora`;
-  if (!term) { grid.innerHTML = '<div class="empty">Type something in the search bar 🔍</div>'; return; }
+  if (!term) { grid.innerHTML = '<div class="empty">Type something in the search bar</div>'; return; }
   const t = term.toLowerCase();
   try {
     const q = query(collection(db,'articles'), where('published','==',true), limit(300));
@@ -314,7 +333,7 @@ async function initSearch() {
     grid.innerHTML = hits.length
       ? hits.map(d => articleCard(d.data(), d.id)).join('')
       : `<div class="empty">No results for "<strong>${escapeHtml(term)}</strong>". Try different keywords.</div>`;
-  } catch (e) { console.error(e); grid.innerHTML = '<div class="empty">⚠️ Search failed.</div>'; }
+  } catch (e) { console.error(e); grid.innerHTML = '<div class="empty">Search failed.</div>'; }
 }
 
 // ==================== Helpers ====================
@@ -348,20 +367,18 @@ document.getElementById('newsletterForm')?.addEventListener('submit', async e =>
     await addDoc(collection(db, 'subscribers'), {
       email, subscribedAt: serverTimestamp()
     });
-    msg.textContent = '🎉 Subscribed! Welcome to the Quillora family.';
+    msg.textContent = 'Subscribed! Welcome to the Quillora family.';
     msg.style.display = 'block';
     msg.style.color = '#16a34a';
     e.target.reset();
   } catch (err) {
-    msg.textContent = '⚠️ Something went wrong — try again.';
+    msg.textContent = 'Something went wrong — try again.';
     msg.style.display = 'block';
     msg.style.color = '#dc2626';
   }
 });
 
 // ==================== 📡 RSS LIVE GENERATOR ====================
-// Browser එකෙන් rss.xml open කරද්දී latest articles 20ක් XML render කරනවා
-// (RSS readers static file එක fetch කරන නිසා ඒවට static updates routine එකෙන්!)
 async function generateRSS() {
   try {
     const q = query(collection(db,'articles'), where('published','==',true), orderBy('createdAt','desc'), limit(20));
