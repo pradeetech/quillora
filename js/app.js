@@ -69,8 +69,14 @@ async function initArticle() {
       box.innerHTML = '<div class="empty">Article not found. <a href="index.html">Back to Home</a></div>';
       return;
     }
-    const a = snap.data();
-    updateDoc(ref, { views: increment(1) }).catch(()=>{});
+        const a = snap.data();
+    // 👁️ Dedupe: session එකකට 1 view විතරයි (refresh count නෑ)
+    const viewKey = 'viewed_' + id;
+    const isNewView = !sessionStorage.getItem(viewKey);
+    if (isNewView) {
+      updateDoc(ref, { views: increment(1) }).catch(()=>{});
+      sessionStorage.setItem(viewKey, '1');
+    }
 
     const desc = a.metaDescription || getExcerpt(a.content, 155);
     document.title = `${a.metaTitle || a.title} | Quillora`;
