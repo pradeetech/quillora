@@ -387,3 +387,19 @@ body.dark-mode .social-icon { background:#fff; }
   outline:2px solid var(--primary);
   outline-offset:2px;
 }
+
+/* ---------- 🔧 FOLLOW US LAYOUT FIX (icon + text inline) ---------- */
+footer .footer-links a.footer-social-link,
+footer .footer-links a.footer-social-link:visited {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: auto !important;
+  white-space: nowrap;
+}
+footer .footer-links a.footer-social-link img {
+  width: 20px !important;
+  height: 20px !important;
+  display: inline-block !important;
+}
