@@ -363,3 +363,27 @@ body.dark-mode .social-icon { background:#fff; }
 .footer-social-link { display:flex; align-items:center; gap:10px !important; }
 .footer-social-link img { flex-shrink:0; transition:transform .2s; }
 .footer-social-link:hover img { transform:scale(1.15); }
+
+/* ---------- 🔧 FOLLOW US LINKS FIX (images size + border) ---------- */
+.footer-links .footer-social-link {
+  display:flex !important;
+  align-items:center;
+  gap:10px;
+  padding:4px 0;
+  border:none !important;
+  background:none !important;
+  outline:none !important;
+  box-shadow:none !important;
+}
+.footer-links .footer-social-link img {
+  width:20px !important;
+  height:20px !important;
+  max-width:none;
+  flex-shrink:0;
+  display:block;
+  border:none;
+}
+.footer-links .footer-social-link:focus-visible {
+  outline:2px solid var(--primary);
+  outline-offset:2px;
+}
