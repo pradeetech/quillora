@@ -98,7 +98,7 @@ async function initArticle() {
         <h1>${escapeHtml(a.title)}</h1>
         <div class="article-meta">
           <span class="meta-item">${ICONS.calendar} ${fmtDate(a.createdAt)}</span>
-          <span class="meta-item">${ICONS.eye} ${(a.views||0)+1} views</span>
+          <span class="meta-item">${ICONS.eye} ${(a.views||0) + (isNewView ? 1 : 0)} views</span>
           <span class="meta-item">${ICONS.clock} ${readTime(a.content)} min read</span>
         </div>
         <button class="bookmark-btn ${saved ? 'saved' : ''}" id="bookmarkBtn">${saved ? ICONS.heartFill + ' Saved' : ICONS.heartOutline + ' Save'}</button>
