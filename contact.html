@@ -30,16 +30,16 @@
 
     <h2>Contact Us</h2>
     <p>Have a question, feedback, or a story idea? We'd love to hear from you!</p>
-    <form id="contactForm" class="form-field" style="max-width:480px;">
+    <form id="contactForm" class="form-field" style="max-width:480px;" action="https://formspree.io/f/xljeybkq" method="POST">
       <label for="cName">Your Name</label>
-      <input type="text" id="cName" required>
+      <input type="text" name="name" id="cName" required>
       <label for="cEmail">Your Email</label>
-      <input type="email" id="cEmail" required>
+      <input type="email" name="email" id="cEmail" required>
       <label for="cMsg">Message</label>
-      <textarea id="cMsg" rows="5" required></textarea>
+      <textarea name="message" id="cMsg" rows="5" required></textarea>
       <button type="submit" class="btn primary" style="margin-top:14px;">Send Message</button>
     </form>
-    <p class="muted" style="margin-top:16px;">Or email us directly: <strong>siriyalathaaththanayaka22@gmail.com</strong></p>
+    <p id="contactStatus" class="muted" style="margin-top:10px; display:none;"></p>
   </main>
 
   <footer class="site-footer">
@@ -49,7 +49,17 @@
           <img src="img/logo.png" alt="Quillora">
           <h3>Quill<span>ora</span></h3>
           <p>Where Every Story Takes Flight</p>
-
+          <div class="footer-social">
+            <a href="https://web.facebook.com/profile.php?id=61594402467022" target="_blank" rel="noopener" class="social-icon" title="Facebook" aria-label="Facebook">
+              <img src="img/social/facebook.png" width="18" height="18" alt="Facebook">
+            </a>
+            <a href="https://www.pinterest.com/quillora0/" target="_blank" rel="noopener" class="social-icon" title="Pinterest" aria-label="Pinterest">
+              <img src="img/social/pinterest.png" width="18" height="18" alt="Pinterest">
+            </a>
+            <a href="https://x.com/quillora0" target="_blank" rel="noopener" class="social-icon" title="X (Twitter)" aria-label="X (Twitter)">
+              <img src="img/social/x.png" width="16" height="16" alt="X (Twitter)">
+            </a>
+          </div>
         </div>
         <div class="footer-links">
           <h4>Popular Categories</h4>
@@ -85,12 +95,29 @@
 
   <script type="module" src="js/shared.js"></script>
   <script>
-    document.getElementById('contactForm')?.addEventListener('submit', e => {
+    document.getElementById('contactForm')?.addEventListener('submit', async e => {
       e.preventDefault();
-      const n = document.getElementById('cName').value;
-      const em = document.getElementById('cEmail').value;
-      const m = document.getElementById('cMsg').value;
-      location.href = `mailto:siriyalathaaththanayaka22@gmail.com?subject=Quillora Contact from ${encodeURIComponent(n)}&body=${encodeURIComponent(m + '\n\n— ' + n + ' (' + em + ')')}`;
+      const form = e.target;
+      const status = document.getElementById('contactStatus');
+      status.textContent = 'Sending…';
+      status.style.display = 'block';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          status.textContent = 'Message sent! We will reply soon.';
+          status.style.color = '#16a34a';
+          form.reset();
+        } else {
+          throw new Error('send failed');
+        }
+      } catch {
+        status.textContent = 'Failed to send — email us directly at siriyalathaaththanayaka22@gmail.com';
+        status.style.color = '#dc2626';
+      }
     });
   </script>
 </body>
