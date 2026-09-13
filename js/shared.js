@@ -181,3 +181,32 @@ if (location.pathname.split('/').pop() === 'article.html') {
     localStorage.setItem('quillora-theme', isDark ? 'dark' : 'light');
   });
 })();
+
+// ---------- 📲 OneSignal Push Notifications ----------
+// OneSignal dashboard එකෙන් ලැබෙන App ID එක මෙතන දාන්න!
+if (true) {
+  window.OneSignal = window.OneSignal || [];
+  window.OneSignal.push(() => {
+    window.OneSignal.init({
+      appId: "fd3a74aa-6af9-4610-babe-1dea408a8d62",
+      notifyButton: { enable: true },
+      promptOptions: {
+        slidedown: {
+          prompts: [{
+            type: "push",
+            autoPrompt: true,
+            text: {
+              actionMessage: "අලුත් articles ලැබෙනකොට notification එකක් ගන්නද?",
+              acceptButton: "Subscribe",
+              cancelButton: "Not now"
+            }
+          }]
+        }
+      }
+    });
+  });
+  const os = document.createElement('script');
+  os.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+  os.defer = true;
+  document.head.appendChild(os);
+}
