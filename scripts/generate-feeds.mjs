@@ -1,13 +1,14 @@
 // ============================================================
-// Quillora — Auto Sitemap & RSS Generator
-// Firestore REST API (public read) → XML files → git commit
-// Runs via GitHub Actions every 6 hours
+// Quillora — Auto Sitemap & RSS Generator + IndexNow Ping
+// Firestore REST API → XML files → detect NEW articles → ping
 // ============================================================
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync } from 'fs';
 
 const API_KEY = 'AIzaSyAemWn2O-rbc5wptLMh8MpIykKex041Y5M';
 const PROJECT_ID = 'articlenest-001';
 const BASE_URL = 'https://pradeetech.github.io/quillora';
+const INDEXNOW_KEY = '52cb915a9453406fba697c91424afaae';
+const STATE_FILE = 'scripts/article-ids.json';
 
 const CATEGORIES = [
   'Technology', 'Business', 'Finance', 'Education', 'Science',
@@ -63,7 +64,7 @@ const esc = t => String(t || '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;')
   .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-// ---------- Generate ----------
+// ==================== MAIN ====================
 const articles = await fetchArticles();
 console.log(`Fetched ${articles.length} published articles`);
 
@@ -109,4 +110,46 @@ rss += `  </channel>
 </rss>`;
 writeFileSync('rss.xml', rss);
 console.log('rss.xml generated');
-console.log('DONE ✅');
+
+// ==================== ⚡ INDEXNOW — NEW ARTICLES AUTO PING ====================
+// State file එකෙන් කලින් run එකේ article IDs compare කරලා
+// අලුතින් ආපු articles විතරක් ping කරනවා (spam prevention!)
+let previousIds = [];
+if (existsSync(STATE_FILE)) {
+  try { previousIds = JSON.parse(readFileSync(STATE_FILE, 'utf8')); } catch {}
+}
+
+const currentIds = articles.map(a => a.id);
+const newIds = currentIds.filter(id => !previousIds.includes(id));
+
+if (newIds.length > 0) {
+  console.log(`New articles detected: ${newIds.length} — pinging IndexNow…`);
+  const urls = newIds.map(id => `${BASE_URL}/article.html?id=${id}`);
+  try {
+    const res = await fetch('https://api.indexnow.org/indexnow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        host: 'pradeetech.github.io',
+        key: INDEXNOW_KEY,
+        keyLocation: `${BASE_URL}/${INDEXNOW_KEY}.txt`,
+        urlList: urls
+      })
+    });
+    console.log(`IndexNow response: ${res.status}`);
+    if (res.ok) {
+      console.log('Bing/Yahoo/DDG notified instantly');
+    } else {
+      console.warn(`IndexNow ping failed (${res.status}) — manual ping කරන්න පුළුවන්`);
+    }
+  } catch (err) {
+    console.warn('IndexNow ping error:', err.message);
+  }
+} else {
+  console.log('No new articles — IndexNow ping skipped');
+}
+
+// State file update (හැම run එකකමම — first run එකේදීත්!)
+writeFileSync(STATE_FILE, JSON.stringify(currentIds, null, 2));
+console.log('State file updated');
+console.log('ALL DONE');
