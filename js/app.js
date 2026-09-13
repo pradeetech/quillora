@@ -1,7 +1,7 @@
 // ============================================================
 // Quillora — Public Pages (Home / Article / Category / Search)
 // Includes: Bookmarks + Related + Comments + Newsletter + RSS
-// Icons: Hybrid (Social = img files | UI = inline SVG)
+//           + TOC + Author Bio | Icons: Hybrid (Social=img, UI=SVG)
 // ============================================================
 import {
   auth, db, collection, getDocs, getDoc, doc, addDoc, deleteDoc, query, orderBy, where, limit,
@@ -69,7 +69,7 @@ async function initArticle() {
       box.innerHTML = '<div class="empty">Article not found. <a href="index.html">Back to Home</a></div>';
       return;
     }
-        const a = snap.data();
+    const a = snap.data();
     // 👁️ Dedupe: session එකකට 1 view විතරයි (refresh count නෑ)
     const viewKey = 'viewed_' + id;
     const isNewView = !sessionStorage.getItem(viewKey);
@@ -115,6 +115,17 @@ async function initArticle() {
           <button class="share-btn cp" id="copyLinkBtn">${ICONS.link}Copy Link</button>
         </div>
       </div>
+      <div class="author-bio">
+        <div class="author-avatar">Q</div>
+        <div class="author-info">
+          <div class="author-name">Written by Quillora Team</div>
+          <p>Where Every Story Takes Flight — we publish clear, well-researched articles on Technology, Business, Finance, Health and Lifestyle. Follow us for new stories every week!</p>
+          <div class="author-social">
+            <a href="https://web.facebook.com/profile.php?id=61594402467022" target="_blank" rel="noopener">Facebook</a>
+            <a href="https://x.com/quillora0" target="_blank" rel="noopener">X</a>
+          </div>
+        </div>
+      </div>
       <div class="related-section" id="relatedArticles">
         <h4>${ICONS.book} You May Also Like</h4>
         <div class="article-grid related-grid" style="margin-top:16px;">
@@ -141,6 +152,25 @@ async function initArticle() {
       }
       setTimeout(() => { this.innerHTML = ICONS.link + 'Copy Link'; }, 2000);
     });
+
+    // 📋 Auto Table of Contents
+    try {
+      const body = box.querySelector('.article-body');
+      const headings = body.querySelectorAll('h2, h3');
+      if (headings.length >= 3) {
+        const toc = document.createElement('div');
+        toc.className = 'article-toc';
+        let tocHtml = '<div class="toc-title">In This Article</div><ol>';
+        headings.forEach((h, i) => {
+          const anchor = 'toc-' + i;
+          h.id = anchor;
+          tocHtml += `<li class="toc-${h.tagName.toLowerCase()}"><a href="#${anchor}">${escapeHtml(h.textContent)}</a></li>`;
+        });
+        tocHtml += '</ol>';
+        toc.innerHTML = tocHtml;
+        body.insertBefore(toc, body.firstChild);
+      }
+    } catch (e) { console.warn('toc:', e); }
 
     // 📚 Related Articles
     loadRelated(a, id);
