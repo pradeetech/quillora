@@ -452,3 +452,46 @@ body.dark-mode .author-info p { color:#9ca3af; }
 
 /* ---------- 📧 CONTACT STATUS ---------- */
 #contactStatus { font-family:'Segoe UI',sans-serif; font-size:.92rem; font-weight:600; }
+
+    /* ---------- 🌙 ADMIN DARK MODE (Eye-Safe) ---------- */
+    body.admin-body.dark-mode { background:#12142a; color:#d1d5db; }
+    body.admin-body.dark-mode .panel { background:#1a1d36; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+    body.admin-body.dark-mode .panel h2 { color:#f3f4f6; }
+    body.admin-body.dark-mode .form-field label { color:#9ca3af; }
+    body.admin-body.dark-mode .form-field input,
+    body.admin-body.dark-mode .form-field select { background:#12142a; border-color:#2d3250; color:#e5e7eb; }
+    body.admin-body.dark-mode table th { background:#1c1f38; color:#e5e7eb; }
+    body.admin-body.dark-mode table td { color:#d1d5db; border-color:#2d3250; }
+    body.admin-body.dark-mode table td strong { color:#f3f4f6; }
+    /* Quill editor — writing comfort (soft dark, not harsh) */
+    body.admin-body.dark-mode .ql-toolbar.ql-snow { background:#1c1f38; border-color:#2d3250; }
+    body.admin-body.dark-mode .ql-toolbar .ql-stroke { stroke:#d1d5db; }
+    body.admin-body.dark-mode .ql-toolbar .ql-fill { fill:#d1d5db; }
+    body.admin-body.dark-mode #editor { background:#1e2138; color:#e5e7eb; }
+    body.admin-body.dark-mode .ql-editor { color:#e5e7eb; }
+    /* Stats */
+    body.admin-body.dark-mode .stat-box { background:#1a1d36; }
+    body.admin-body.dark-mode .stat-box .stat-num { color:#e5e7eb; }
+    body.admin-body.dark-mode .stat-box.good .stat-num { color:#4ade80; }
+    body.admin-body.dark-mode .stat-box.warn .stat-num { color:#fbbf24; }
+    body.admin-body.dark-mode .stat-box.bad .stat-num { color:#f87171; }
+    /* SEO panel */
+    body.admin-body.dark-mode .seo-panel { background:#12142a; border-color:#2d3250; }
+    body.admin-body.dark-mode .seo-check .ok { color:#4ade80; }
+    body.admin-body.dark-mode .seo-check .err { color:#f87171; }
+    /* Preview + toggle */
+    body.admin-body.dark-mode .toggle-btn { background:#1a1d36; color:#d1d5db; border-color:#2d3250; }
+    body.admin-body.dark-mode .toggle-btn.active { border-color:var(--primary); color:#93b4ff; background:#16204a; }
+    body.admin-body.dark-mode .preview-frame { background:#1a1d36; color:#d1d5db; }
+    body.admin-body.dark-mode .preview-frame .pv-title { color:#f3f4f6; }
+    body.admin-body.dark-mode .cover-preview { border-color:#2d3250; }
+    /* Toggle button style */
+    .topbar-dark-btn {
+      background:none; border:1px solid rgba(255,255,255,.2); cursor:pointer;
+      font-size:1.1rem; padding:4px 10px; border-radius:8px; margin-left:12px;
+      transition:.2s;
+    }
+    .topbar-dark-btn:hover { background:rgba(255,255,255,.1); }
+    /* 👁️ Light mode eye-safe tweak — pure white වෙනුවට soft off-white */
+    body.admin-body { background:#f4f6fb; }
+    .panel { background:#fff; }
