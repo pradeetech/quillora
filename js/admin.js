@@ -1,5 +1,6 @@
 // ============================================================
 // Quillora — Admin Dashboard (Owner Only) — Pro Edition
+// FIXED: duplicate escapeHtml removed
 // ============================================================
 import {
   db, auth, collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc,
@@ -25,6 +26,23 @@ onAuthStateChanged(auth, async user => {
 document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
 document.getElementById('resendVerifyBtn')?.addEventListener('click', () => sendEmailVerification(auth.currentUser));
 
+// ---------- Helpers (DEFINED ONCE!) ----------
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str ?? '';
+  return d.innerHTML;
+}
+function fmtDate(ts) { return ts?.toDate?.().toLocaleDateString() || '—'; }
+function slugify(t) {
+  return t.toLowerCase().trim().replace(/[^\w\s-]/g,'').replace(/[\s_]+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+}
+function showMsg(type, text) {
+  const m = document.getElementById('msg');
+  m.className = 'alert ' + (type === 'ok' ? 'ok' : 'err');
+  m.textContent = text;
+  setTimeout(() => m.className = 'alert', 4000);
+}
+
 // ---------- Quill Editor ----------
 const quill = new Quill('#editor', {
   theme: 'snow',
@@ -43,16 +61,6 @@ const quill = new Quill('#editor', {
 
 let editingId = null;
 let autosaveTimer = null;
-
-function slugify(t) {
-  return t.toLowerCase().trim().replace(/[^\w\s-]/g,'').replace(/[\s_]+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
-}
-function showMsg(type, text) {
-  const m = document.getElementById('msg');
-  m.className = 'alert ' + (type === 'ok' ? 'ok' : 'err');
-  m.textContent = text;
-  setTimeout(() => m.className = 'alert', 4000);
-}
 
 // ==================== ✨ LIVE STATS ====================
 function updateStats() {
@@ -81,7 +89,6 @@ function updateStats() {
   else if (keyCount === 1) keyBox.classList.add('warn');
   else keyBox.classList.add('bad');
 
-  // SEO checks
   const cT = document.getElementById('chkTitle');
   cT.innerHTML = title.length >= 30 && title.length <= 65
     ? '<span class="ok">✔</span> Title: good length (' + title.length + ' chars)'
@@ -103,7 +110,7 @@ function updateStats() {
     : '<span class="err">✘</span> Keywords: add 2+ (subcategories)';
 }
 
-// Listen to all inputs
+// ---------- Listeners ----------
 ['artTitle','artMetaDesc','artKeywords'].forEach(id =>
   document.getElementById(id).addEventListener('input', updateStats)
 );
@@ -116,16 +123,17 @@ document.getElementById('artTitle').addEventListener('input', scheduleAutosave);
 // ==================== 💾 AUTO-SAVE DRAFT ====================
 function scheduleAutosave() {
   clearTimeout(autosaveTimer);
-  document.getElementById('autosaveInd').textContent = '💾 Saving draft…';
+  if (editingId) return;
+  document.getElementById('autosaveInd').textContent = 'Saving draft…';
   document.getElementById('autosaveInd').className = 'autosave-ind saving';
   autosaveTimer = setTimeout(saveDraft, 2000);
 }
 
 async function saveDraft() {
   const title = document.getElementById('artTitle').value.trim();
-  if (!title || editingId) return; // Only autosave NEW articles (draft mode)
+  if (!title || editingId) return;
   const draftData = {
-    title, slug: slugify(title),
+    title,
     content: quill.root.innerHTML,
     coverImage: document.getElementById('artCover').value.trim() || null,
     metaDesc: document.getElementById('artMetaDesc').value.trim(),
@@ -133,17 +141,16 @@ async function saveDraft() {
     savedAt: new Date().toISOString()
   };
   localStorage.setItem('quillora_draft', JSON.stringify(draftData));
-  document.getElementById('autosaveInd').textContent = '✅ Draft saved locally';
+  document.getElementById('autosaveInd').textContent = 'Draft saved locally';
   document.getElementById('autosaveInd').className = 'autosave-ind saved';
 }
 
-// Load draft on page open (if exists & no editing)
 (function loadDraft() {
   const draft = localStorage.getItem('quillora_draft');
   if (!draft) return;
   try {
     const d = JSON.parse(draft);
-    if (d.title && !confirm('💾 Unsaved draft found: "' + d.title + '"\n\nRestore it?')) {
+    if (d.title && !confirm('Unsaved draft found: "' + d.title + '"\n\nRestore it?')) {
       localStorage.removeItem('quillora_draft');
       return;
     }
@@ -153,7 +160,7 @@ async function saveDraft() {
     document.getElementById('artKeywords').value = d.keywords || '';
     if (d.content) quill.root.innerHTML = d.content;
     updateStats();
-    showMsg('ok', '📄 Draft restored!');
+    showMsg('ok', 'Draft restored!');
   } catch {}
 })();
 
@@ -161,7 +168,7 @@ async function saveDraft() {
 document.getElementById('artCover').addEventListener('input', e => {
   const url = e.target.value.trim();
   const prev = document.getElementById('coverPreview');
-  if (url && (url.startsWith('http'))) {
+  if (url && url.startsWith('http')) {
     prev.src = url;
     prev.classList.add('show');
   } else {
@@ -178,7 +185,6 @@ function switchTab(tab) {
   const pvBtn = document.getElementById('tabPreview');
   if (tab === 'editor') {
     edBtn.classList.add('active'); pvBtn.classList.remove('active');
-    // Hide preview frame, show editor sections
     document.querySelectorAll('.preview-frame').forEach(f => f.remove());
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
@@ -188,7 +194,6 @@ function switchTab(tab) {
 }
 
 function showPreview() {
-  // Remove existing preview
   document.querySelectorAll('.preview-frame').forEach(f => f.remove());
   const title = document.getElementById('artTitle').value.trim() || '(No title)';
   const category = document.getElementById('artCategory').value;
@@ -199,23 +204,16 @@ function showPreview() {
   pv.className = 'preview-frame show';
   pv.innerHTML = `
     <div class="pv-topbar" style="background:var(--dark); color:#fff; padding:10px 20px; border-radius:10px; margin-bottom:24px; font-family:'Segoe UI',sans-serif; font-size:.85rem;">
-      👁️ This is how your article will appear to readers
+      This is how your article will appear to readers
     </div>
     <div class="pv-category">${escapeHtml(category)}</div>
     <div class="pv-title">${escapeHtml(title)}</div>
     ${cover ? `<img src="${escapeHtml(cover)}" alt="cover" style="margin-bottom:20px;">` : ''}
     <div class="pv-body">${content}</div>
   `;
-  // Insert after the stats bar (top of page)
   const wrap = document.querySelector('.admin-wrap');
   wrap.insertBefore(pv, wrap.children[2]);
   pv.scrollIntoView({ behavior: 'smooth' });
-}
-
-function escapeHtml(str) {
-  const d = document.createElement('div');
-  d.textContent = str ?? '';
-  return d.innerHTML;
 }
 
 // ==================== Save / Update ====================
@@ -240,15 +238,15 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
   try {
     if (editingId) {
       await updateDoc(doc(db, 'articles', editingId), data);
-      showMsg('ok', '✅ Article updated! Now: sitemap auto + GSC + social share.');
+      showMsg('ok', 'Article updated! Now: sitemap auto + GSC + social share.');
     } else {
       data.views = 0;
       data.published = true;
       data.createdAt = serverTimestamp();
       await addDoc(collection(db, 'articles'), data);
-      showMsg('ok', '🎉 Article published! Auto-feeds will sync within 6h. Share on social + GSC request now!');
+      showMsg('ok', 'Article published! Auto-feeds sync within 6h. Share on social now!');
     }
-    localStorage.removeItem('quillora_draft'); // Clear draft
+    localStorage.removeItem('quillora_draft');
     resetForm();
     loadTable();
   } catch (e) { showMsg('err', '❌ ' + e.message); }
@@ -261,6 +259,7 @@ function resetForm() {
   quill.setContents([]);
   document.getElementById('coverPreview').classList.remove('show');
   localStorage.removeItem('quillora_draft');
+  document.getElementById('autosaveInd').textContent = '';
   updateStats();
   document.querySelectorAll('.preview-frame').forEach(f => f.remove());
 }
@@ -288,8 +287,6 @@ async function loadTable() {
     }).join('');
   } catch (e) { tbody.innerHTML = `<tr><td colspan="5">Error: ${e.message}</td></tr>`; }
 }
-function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str ?? ''; return d.innerHTML; }
-function fmtDate(ts) { return ts?.toDate?.().toLocaleDateString() || '—'; }
 
 window.editArticle = async id => {
   const s = await getDoc(doc(db, 'articles', id));
