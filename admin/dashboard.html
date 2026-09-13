@@ -10,16 +10,80 @@
   <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    /* Admin panel dark mode (separate) */
-    body.admin-body.dark-mode { background:#0f1123; }
-    body.admin-body.dark-mode .panel { background:#1a1d36; color:#d1d5db; }
-    body.admin-body.dark-mode .panel h2 { color:#f3f4f6; }
-    body.admin-body.dark-mode .form-field input,
-    body.admin-body.dark-mode .form-field select { background:#12142a; border-color:#2d3250; color:#e5e7eb; }
-    body.admin-body.dark-mode table th { background:#1c1f38; color:#e5e7eb; }
-    body.admin-body.dark-mode table td { color:#d1d5db; border-color:#2d3250; }
-    body.admin-body.dark-mode #editor { background:#fff; }
-    .topbar-dark-btn { background:none; border:none; font-size:1.2rem; cursor:pointer; margin-left:12px; }
+    /* ---------- ✨ PRO WRITING STUDIO ---------- */
+    .admin-wrap { max-width: 1100px; }
+    .stats-bar {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px; margin-bottom: 20px;
+    }
+    .stat-box {
+      background: #fff; border-radius: 10px; padding: 14px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05); text-align: center;
+    }
+    .stat-box .stat-num { font-size: 1.4rem; font-weight: 700; font-family:'Segoe UI',sans-serif; color: var(--dark); }
+    .stat-box .stat-label { font-size: .75rem; color: var(--gray); font-family:'Segoe UI',sans-serif; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+    .stat-box.good .stat-num { color: #16a34a; }
+    .stat-box.warn .stat-num { color: #f59e0b; }
+    .stat-box.bad .stat-num { color: #dc2626; }
+
+    .panel { padding: 24px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .cover-preview {
+      width: 100%; max-height: 200px; object-fit: cover;
+      border-radius: 8px; margin-top: 10px; display: none;
+      border: 1px solid var(--border);
+    }
+    .cover-preview.show { display: block; }
+
+    /* Quill editor polish */
+    .ql-toolbar.ql-snow { border-radius: 8px 8px 0 0; border-color: var(--border); }
+    .ql-container.ql-snow { border-radius: 0 0 8px 8px; border-color: var(--border); font-size: 1rem; }
+    #editor { background: #fff; }
+
+    .seo-check { font-size: .82rem; font-family:'Segoe UI',sans-serif; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
+    .seo-check .ok { color: #16a34a; }
+    .seo-check .err { color: #dc2626; }
+    .seo-panel { background: #f8fafc; border: 1px dashed var(--border); border-radius: 8px; padding: 12px 16px; margin-top: 8px; }
+
+    .preview-toggle-wrap { display: flex; gap: 10px; margin-bottom: 14px; }
+    .toggle-btn {
+      flex: 1; padding: 10px; border: 2px solid var(--border); background: #fff;
+      border-radius: 8px; cursor: pointer; font-family:'Segoe UI',sans-serif;
+      font-weight: 600; font-size: .9rem; transition: .2s;
+    }
+    .toggle-btn.active { border-color: var(--primary); color: var(--primary); background: #eef2ff; }
+
+    .preview-frame {
+      display: none; border: 1px solid var(--border); border-radius: 12px;
+      padding: 32px; background: #fff; max-width: 720px; margin: 0 auto;
+    }
+    .preview-frame.show { display: block; }
+    .preview-frame .pv-category { font-size: .75rem; font-weight: 700; color: #fff; background: var(--gradient); padding: 3px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; font-family: 'Segoe UI',sans-serif; }
+    .preview-frame .pv-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 12px; font-family: 'Segoe UI',sans-serif; }
+    .preview-frame img { max-width: 100%; border-radius: 8px; }
+    .preview-frame .pv-body { line-height: 1.85; font-size: 1.05rem; }
+    .preview-frame .pv-body h1, .preview-frame .pv-body h2, .preview-frame .pv-body h3 { margin: 20px 0 10px; }
+    .preview-frame .pv-body p { margin-bottom: 16px; }
+
+    .autosave-ind {
+      font-size: .78rem; color: var(--gray); font-family:'Segoe UI',sans-serif;
+      text-align: right; margin-top: 6px; min-height: 18px;
+    }
+    .autosave-ind.saving { color: var(--primary); }
+    .autosave-ind.saved { color: #16a34a; }
+
+    /* Dark mode */
+    body.dark-mode .stat-box { background: #1a1d36; }
+    body.dark-mode .stat-box .stat-num { color: #e5e7eb; }
+    body.dark-mode .seo-panel { background: #12142a; border-color: #2d3250; }
+    body.dark-mode .toggle-btn { background: #1a1d36; color: #d1d5db; border-color: #2d3250; }
+    body.dark-mode .toggle-btn.active { border-color: var(--primary); color: var(--primary); background: #16204a; }
+    body.dark-mode .preview-frame { background: #1a1d36; color: #d1d5db; }
+    body.dark-mode .preview-frame .pv-title { color: #f3f4f6; }
+    body.dark-mode .cover-preview { border-color: #2d3250; }
   </style>
 </head>
 <body class="admin-body">
@@ -28,66 +92,103 @@
       <img src="../img/logo.png" alt="Quillora" style="height:36px; width:36px; border-radius:50%;">
       Quillora — Admin Dashboard
     </strong>
-    <div class="links" style="display:flex; align-items:center;">
+    <div class="links">
       <a href="../index.html">← View Site</a>
       <a href="../profile.html">Profile</a>
-      <button class="topbar-dark-btn" id="darkToggle" title="Toggle dark mode">🌙</button>
       <button id="logoutBtn">Logout</button>
     </div>
   </div>
 
   <div class="verify-banner" id="verifyBanner">
-    <span>✉️ Your email is not verified yet — please verify to publish articles. Check your inbox.</span>
-    <button id="resendVerifyBtn">Resend Verification Email</button>
+    <span>✉️ Your email is not verified yet — please verify to publish articles.</span>
+    <button id="resendVerifyBtn">Resend Verification</button>
   </div>
 
   <div class="admin-wrap">
     <div class="alert" id="msg"></div>
 
+    <!-- ✨ LIVE STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat-box"><div class="stat-num" id="statWords">0</div><div class="stat-label">Words</div></div>
+      <div class="stat-box"><div class="stat-num" id="statRead">0</div><div class="stat-label">Min Read</div></div>
+      <div class="stat-box" id="seoDescBox"><div class="stat-num" id="statDesc">0</div><div class="stat-label">Meta Chars (155 ideal)</div></div>
+      <div class="stat-box" id="seoKeyBox"><div class="stat-num" id="statKeys">0</div><div class="stat-label">Keywords</div></div>
+    </div>
+
     <div class="panel">
       <h2 id="editorTitle">✍️ Write New Article</h2>
-      <div class="form-field">
-        <label>Article Title *</label>
-        <input type="text" id="artTitle" placeholder="e.g., 10 Tech Trends to Watch in 2026">
+      <div class="form-grid">
+        <div class="form-field full">
+          <label>Article Title *</label>
+          <input type="text" id="artTitle" placeholder="e.g., 10 Tech Trends to Watch in 2026">
+        </div>
+        <div class="form-field">
+          <label>Main Category *</label>
+          <select id="artCategory">
+            <option>Technology</option><option>Business</option>
+            <option>Finance</option><option>Education</option>
+            <option>Science</option><option>Health</option>
+            <option>Lifestyle</option><option>Career</option>
+            <option>Travel</option><option>Food</option>
+            <option>Sports</option><option>Gaming</option>
+            <option>Entertainment</option><option>Home</option>
+            <option>News</option><option>Automotive</option>
+            <option>Motivation</option><option>Design</option>
+          </select>
+          <small style="color:#6b7280; font-size:.8rem; display:block; margin-top:4px;">
+            💡 Subcategories → Keywords field එකට!
+          </small>
+        </div>
+        <div class="form-field">
+          <label>Cover Image URL (optional)</label>
+          <input type="url" id="artCover" placeholder="https://… image link">
+          <img class="cover-preview" id="coverPreview" alt="Cover preview">
+        </div>
       </div>
-      <div class="form-field">
-        <label>Main Category *</label>
-        <select id="artCategory">
-          <option>Technology</option><option>Business</option>
-          <option>Finance</option><option>Education</option>
-          <option>Science</option><option>Health</option>
-          <option>Lifestyle</option><option>Career</option>
-          <option>Travel</option><option>Food</option>
-          <option>Sports</option><option>Gaming</option>
-          <option>Entertainment</option><option>Home</option>
-          <option>News</option><option>Automotive</option>
-          <option>Motivation</option><option>Design</option>
-        </select>
-        <small style="color:#6b7280; font-size:.8rem; display:block; margin-top:4px;">
-          💡 Subcategories (AI, Cryptocurrency, Yoga…) → පහළ Keywords field එකට!
-        </small>
-      </div>
-      <div class="form-field">
-        <label>Cover Image URL (optional)</label>
-        <input type="url" id="artCover" placeholder="https://… image link">
-      </div>
-      <div class="form-field">
+
+      <div class="form-field full">
         <label>Content *</label>
         <div id="editor"></div>
       </div>
-      <div class="form-field">
-        <label>SEO — Meta Title (optional)</label>
-        <input type="text" id="artMetaTitle" placeholder="Leave empty to use the article title">
+
+      <div class="autosave-ind" id="autosaveInd"></div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label>SEO — Meta Title (optional)</label>
+          <input type="text" id="artMetaTitle" placeholder="Leave empty to use the article title">
+        </div>
+        <div class="form-field">
+          <label>SEO — Meta Description (150–160 chars) *</label>
+          <input type="text" id="artMetaDesc" maxlength="160" placeholder="Short summary shown in Google results">
+        </div>
+        <div class="form-field full">
+          <label>SEO — Keywords (comma separated — subcategories)</label>
+          <input type="text" id="artKeywords" placeholder="e.g., ai, machine learning (for Technology)">
+        </div>
       </div>
-      <div class="form-field">
-        <label>SEO — Meta Description (150–160 chars) *</label>
-        <input type="text" id="artMetaDesc" maxlength="160" placeholder="Short summary shown in Google results">
+
+      <!-- 🎯 SEO CHECK PANEL -->
+      <div class="seo-panel">
+        <div class="seo-check" id="chkTitle">• Title: —</div>
+        <div class="seo-check" id="chkDesc">• Meta description: —</div>
+        <div class="seo-check" id="chkContent">• Content length: —</div>
+        <div class="seo-check" id="chkKeys">• Keywords: —</div>
       </div>
-      <div class="form-field">
-        <label>SEO — Keywords (comma separated — subcategories මෙතන!)</label>
-        <input type="text" id="artKeywords" placeholder="e.g., ai, machine learning (for Technology)">
+
+      <button class="btn-save" id="saveBtn" style="margin-top:16px;">💾 Save & Publish</button>
+    </div>
+
+    <!-- 👀 LIVE PREVIEW -->
+    <div class="panel">
+      <h2>👀 Preview — What Readers See</h2>
+      <div class="preview-toggle-wrap">
+        <button class="toggle-btn active" id="tabEditor">✏️ Editor</button>
+        <button class="toggle-btn" id="tabPreview">👁️ Preview</button>
       </div>
-      <button class="btn-save" id="saveBtn">💾 Save & Publish</button>
+      <div id="editorSection">
+        <!-- editor already above -->
+      </div>
     </div>
 
     <div class="panel">
