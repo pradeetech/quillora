@@ -340,3 +340,26 @@ body.dark-mode .dark-toggle:hover { background:#252a4a; }
 
 /* ---------- 📡 RSS BROWSER VIEW (rss.xml JS render) ---------- */
 body:has(> rss) { font-family:'Segoe UI',monospace; background:#1e1e2e; color:#cdd6f4; padding:20px; white-space:pre-wrap; word-break:break-all; }
+
+/* ---------- 🔗 FOOTER SOCIAL ICONS (Official Images) ---------- */
+.footer-social { display:flex; gap:10px; margin-top:14px; }
+.social-icon {
+  width:40px; height:40px; border-radius:50%;
+  background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  transition:.25s;
+}
+.social-icon img { display:block; }
+.social-icon:hover {
+  transform:translateY(-4px) scale(1.08);
+  box-shadow:0 8px 18px rgba(0,0,0,.35);
+}
+.social-icon[title="Facebook"]:hover { box-shadow:0 8px 18px rgba(24,119,242,.6); }
+.social-icon[title="Pinterest"]:hover { box-shadow:0 8px 18px rgba(230,0,35,.6); }
+.social-icon[title="X (Twitter)"]:hover { box-shadow:0 8px 18px rgba(0,0,0,.7); }
+body.dark-mode .social-icon { background:#fff; }
+
+/* ---------- 🔗 FOOTER SOCIAL TEXT LINKS (Images) ---------- */
+.footer-social-link { display:flex; align-items:center; gap:10px !important; }
+.footer-social-link img { flex-shrink:0; transition:transform .2s; }
+.footer-social-link:hover img { transform:scale(1.15); }
