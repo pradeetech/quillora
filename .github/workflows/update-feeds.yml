@@ -1,0 +1,31 @@
+name: Update Sitemap & RSS
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # හැම 6 පැයකට (UTC)
+  workflow_dispatch:          # අතින් run කරන්න button එකකුත්!
+
+permissions:
+  contents: write
+
+jobs:
+  update-feeds:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate sitemap & RSS from Firestore
+        run: node scripts/generate-feeds.mjs
+
+      - name: Commit & Push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml rss.xml
+          git diff --staged --quiet || (git commit -m "Auto-update sitemap & RSS feeds [skip ci]" && git push)
