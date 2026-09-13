@@ -447,5 +447,8 @@ body.dark-mode .author-name { color:#f3f4f6; }
 body.dark-mode .author-info p { color:#9ca3af; }
 @media (max-width:768px) { .author-bio { flex-direction:column; } }
 
+/* ---------- ✨ PRO DASHBOARD STYLES ---------- */
+/* Already included in dashboard.html <style> — nothing extra needed */
+
 /* ---------- 📧 CONTACT STATUS ---------- */
 #contactStatus { font-family:'Segoe UI',sans-serif; font-size:.92rem; font-weight:600; }
