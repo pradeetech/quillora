@@ -1,6 +1,6 @@
 // ============================================================
 // Quillora — Admin Dashboard (Owner Only) — Pro Edition
-// FIXED: duplicate escapeHtml removed
+// + Affiliate Product Fields (name/link/image/price/rating/badge)
 // ============================================================
 import {
   db, auth, collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc,
@@ -235,6 +235,21 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     metaTitle, metaDescription: metaDesc, keywords,
     updatedAt: serverTimestamp()
   };
+
+  // 💰 Affiliate product (optional — link එක දැම්මොත් විතරයි save වෙනවා)
+  const affLink = document.getElementById('affLink').value.trim();
+  if (affLink) {
+    data.affiliate = {
+      name: document.getElementById('affName').value.trim() || 'Featured Product',
+      link: affLink,
+      image: document.getElementById('affImage').value.trim() || null,
+      price: document.getElementById('affPrice').value.trim() || null,
+      oldPrice: document.getElementById('affOldPrice').value.trim() || null,
+      rating: document.getElementById('affRating').value.trim() || null,
+      badge: document.getElementById('affBadge').value.trim() || null
+    };
+  }
+
   try {
     if (editingId) {
       await updateDoc(doc(db, 'articles', editingId), data);
@@ -256,6 +271,10 @@ function resetForm() {
   editingId = null;
   document.getElementById('editorTitle').textContent = '✍️ Write New Article';
   ['artTitle','artCover','artMetaTitle','artMetaDesc','artKeywords'].forEach(id => document.getElementById(id).value = '');
+  ['affName','affLink','affImage','affPrice','affOldPrice','affRating','affBadge']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const affToggle = document.querySelector('.affiliate-toggle');
+  if (affToggle) affToggle.open = false;
   quill.setContents([]);
   document.getElementById('coverPreview').classList.remove('show');
   localStorage.removeItem('quillora_draft');
@@ -272,8 +291,9 @@ async function loadTable() {
     if (s.empty) { tbody.innerHTML = '<tr><td colspan="5">No articles yet — write your first one!</td></tr>'; return; }
     tbody.innerHTML = s.docs.map(d => {
       const a = d.data();
+      const affIcon = a.affiliate?.link ? ' 💰' : '';
       return `<tr>
-        <td><strong>${escapeHtml(a.title)}</strong><br>
+        <td><strong>${escapeHtml(a.title)}</strong>${affIcon}<br>
             <small style="color:#6b7280">${fmtDate(a.createdAt)} · article.html?id=${d.id}</small></td>
         <td>${escapeHtml(a.category)}</td>
         <td>${a.views || 0}</td>
@@ -305,6 +325,19 @@ window.editArticle = async id => {
   document.getElementById('artMetaTitle').value = a.metaTitle || '';
   document.getElementById('artMetaDesc').value = a.metaDescription || '';
   document.getElementById('artKeywords').value = a.keywords || '';
+  // 💰 Load affiliate fields
+  const aff = a.affiliate || {};
+  document.getElementById('affName').value = aff.name || '';
+  document.getElementById('affLink').value = aff.link || '';
+  document.getElementById('affImage').value = aff.image || '';
+  document.getElementById('affPrice').value = aff.price || '';
+  document.getElementById('affOldPrice').value = aff.oldPrice || '';
+  document.getElementById('affRating').value = aff.rating || '';
+  document.getElementById('affBadge').value = aff.badge || '';
+  if (aff.link) {
+    const affToggle = document.querySelector('.affiliate-toggle');
+    if (affToggle) affToggle.open = true;
+  }
   quill.root.innerHTML = a.content;
   updateStats();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -322,7 +355,6 @@ window.deleteArticle = async id => {
 loadTable();
 
 // ==================== 🌙 Dark Mode Toggle (Admin) ====================
-// Main site එකේ theme එක්ක SYNC වෙනවා (same localStorage key)
 (function initAdminDarkMode() {
   const btn = document.getElementById('darkToggle');
   if (!btn) return;
