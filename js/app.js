@@ -1,7 +1,8 @@
 // ============================================================
 // Quillora — Public Pages (Home / Article / Category / Search)
 // Includes: Bookmarks + Related + Comments + Newsletter + RSS
-//           + TOC + Author Bio | Icons: Hybrid (Social=img, UI=SVG)
+//           + TOC + Author Bio + AFFILIATE CARDS
+//           + Views Dedupe | Icons: Hybrid (Social=img, UI=SVG)
 // ============================================================
 import {
   auth, db, collection, getDocs, getDoc, doc, addDoc, deleteDoc, query, orderBy, where, limit,
@@ -115,6 +116,29 @@ async function initArticle() {
           <button class="share-btn cp" id="copyLinkBtn">${ICONS.link}Copy Link</button>
         </div>
       </div>
+      ${a.affiliate && a.affiliate.link ? `
+      <div class="affiliate-card">
+        <div class="aff-badge">${escapeHtml(a.affiliate.badge || 'Recommended')}</div>
+        <div class="aff-product">
+          <div class="aff-image">
+            ${a.affiliate.image 
+              ? `<img src="${escapeHtml(a.affiliate.image)}" alt="${escapeHtml(a.affiliate.name)}" loading="lazy">`
+              : '<div class="aff-noimg">🛒</div>'}
+          </div>
+          <div class="aff-details">
+            <h3 class="aff-name">${escapeHtml(a.affiliate.name)}</h3>
+            ${a.affiliate.rating ? `<div class="aff-stars">★ ${escapeHtml(a.affiliate.rating)} / 5</div>` : ''}
+            <div class="aff-pricing">
+              ${a.affiliate.oldPrice ? `<span class="aff-old">${escapeHtml(a.affiliate.oldPrice)}</span>` : ''}
+              ${a.affiliate.price ? `<span class="aff-price">${escapeHtml(a.affiliate.price)}</span>` : ''}
+            </div>
+            <a href="${escapeHtml(a.affiliate.link)}" target="_blank" rel="nofollow sponsored noopener" class="aff-buy">
+              🛒 Buy Now — View on Store
+            </a>
+            <p class="aff-disclosure">We may earn a commission at no extra cost to you.</p>
+          </div>
+        </div>
+      </div>` : ''}
       <div class="author-bio">
         <div class="author-avatar">Q</div>
         <div class="author-info">
