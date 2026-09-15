@@ -38,7 +38,6 @@
     }
     .cover-preview.show { display: block; }
 
-    /* Quill editor polish */
     .ql-toolbar.ql-snow { border-radius: 8px 8px 0 0; border-color: var(--border); }
     .ql-container.ql-snow { border-radius: 0 0 8px 8px; border-color: var(--border); font-size: 1rem; }
     #editor { background: #fff; }
@@ -75,15 +74,56 @@
     .autosave-ind.saving { color: var(--primary); }
     .autosave-ind.saved { color: #16a34a; }
 
-    /* Dark mode */
-    body.dark-mode .stat-box { background: #1a1d36; }
-    body.dark-mode .stat-box .stat-num { color: #e5e7eb; }
-    body.dark-mode .seo-panel { background: #12142a; border-color: #2d3250; }
-    body.dark-mode .toggle-btn { background: #1a1d36; color: #d1d5db; border-color: #2d3250; }
-    body.dark-mode .toggle-btn.active { border-color: var(--primary); color: var(--primary); background: #16204a; }
-    body.dark-mode .preview-frame { background: #1a1d36; color: #d1d5db; }
-    body.dark-mode .preview-frame .pv-title { color: #f3f4f6; }
-    body.dark-mode .cover-preview { border-color: #2d3250; }
+    /* ---------- 💰 AFFILIATE PANEL ---------- */
+    .affiliate-toggle {
+      border: 1px dashed var(--primary); border-radius: 10px;
+      padding: 12px 16px; background: #f8faff;
+    }
+    .affiliate-toggle summary {
+      cursor: pointer; font-family:'Segoe UI',sans-serif;
+      font-weight: 600; font-size: .95rem; color: var(--primary);
+    }
+    .affiliate-fields { margin-top: 14px; }
+    .aff-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+    .aff-row-half { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 768px) { .aff-row, .aff-row-half { grid-template-columns: 1fr; } }
+
+    /* ---------- 🌙 ADMIN DARK MODE (Eye-Safe) ---------- */
+    body.admin-body.dark-mode { background:#12142a; color:#d1d5db; }
+    body.admin-body.dark-mode .panel { background:#1a1d36; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+    body.admin-body.dark-mode .panel h2 { color:#f3f4f6; }
+    body.admin-body.dark-mode .form-field label { color:#9ca3af; }
+    body.admin-body.dark-mode .form-field input,
+    body.admin-body.dark-mode .form-field select { background:#12142a; border-color:#2d3250; color:#e5e7eb; }
+    body.admin-body.dark-mode table th { background:#1c1f38; color:#e5e7eb; }
+    body.admin-body.dark-mode table td { color:#d1d5db; border-color:#2d3250; }
+    body.admin-body.dark-mode table td strong { color:#f3f4f6; }
+    body.admin-body.dark-mode .ql-toolbar.ql-snow { background:#1c1f38; border-color:#2d3250; }
+    body.admin-body.dark-mode .ql-toolbar .ql-stroke { stroke:#d1d5db; }
+    body.admin-body.dark-mode .ql-toolbar .ql-fill { fill:#d1d5db; }
+    body.admin-body.dark-mode #editor { background:#1e2138; color:#e5e7eb; }
+    body.admin-body.dark-mode .ql-editor { color:#e5e7eb; }
+    body.admin-body.dark-mode .stat-box { background:#1a1d36; }
+    body.admin-body.dark-mode .stat-box .stat-num { color:#e5e7eb; }
+    body.admin-body.dark-mode .stat-box.good .stat-num { color:#4ade80; }
+    body.admin-body.dark-mode .stat-box.warn .stat-num { color:#fbbf24; }
+    body.admin-body.dark-mode .stat-box.bad .stat-num { color:#f87171; }
+    body.admin-body.dark-mode .seo-panel { background:#12142a; border-color:#2d3250; }
+    body.admin-body.dark-mode .seo-check .ok { color:#4ade80; }
+    body.admin-body.dark-mode .seo-check .err { color:#f87171; }
+    body.admin-body.dark-mode .toggle-btn { background:#1a1d36; color:#d1d5db; border-color:#2d3250; }
+    body.admin-body.dark-mode .toggle-btn.active { border-color:var(--primary); color:#93b4ff; background:#16204a; }
+    body.admin-body.dark-mode .preview-frame { background:#1a1d36; color:#d1d5db; }
+    body.admin-body.dark-mode .preview-frame .pv-title { color:#f3f4f6; }
+    body.admin-body.dark-mode .cover-preview { border-color:#2d3250; }
+    body.admin-body.dark-mode .affiliate-toggle { background:#12142a; }
+    body.admin-body { background:#f4f6fb; }
+    .topbar-dark-btn {
+      background:none; border:1px solid rgba(255,255,255,.2); cursor:pointer;
+      font-size:1.1rem; padding:4px 10px; border-radius:8px; margin-left:12px;
+      transition:.2s;
+    }
+    .topbar-dark-btn:hover { background:rgba(255,255,255,.1); }
   </style>
 </head>
 <body class="admin-body">
@@ -169,6 +209,52 @@
         </div>
       </div>
 
+      <!-- 💰 AFFILIATE PRODUCT (Optional) -->
+      <div class="form-field full">
+        <details class="affiliate-toggle">
+          <summary>💰 Add Affiliate Product (optional — monetization)</summary>
+          <div class="affiliate-fields">
+            <div class="aff-row">
+              <div class="form-field">
+                <label>Product Name</label>
+                <input type="text" id="affName" placeholder="e.g., OnePlus 15 5G (16GB/512GB)">
+              </div>
+              <div class="form-field">
+                <label>Affiliate Link *</label>
+                <input type="url" id="affLink" placeholder="https://amzn.to/... or https://daraz.lk/...">
+              </div>
+            </div>
+            <div class="aff-row">
+              <div class="form-field">
+                <label>Product Image URL</label>
+                <input type="url" id="affImage" placeholder="https://... product image">
+              </div>
+              <div class="aff-row-half">
+                <div class="form-field">
+                  <label>Price (display)</label>
+                  <input type="text" id="affPrice" placeholder="Rs. 344,900">
+                </div>
+                <div class="form-field">
+                  <label>Old Price (strikethrough, optional)</label>
+                  <input type="text" id="affOldPrice" placeholder="Rs. 359,900">
+                </div>
+              </div>
+            </div>
+            <div class="aff-row">
+              <div class="form-field">
+                <label>Rating (1-5, optional)</label>
+                <input type="number" id="affRating" min="1" max="5" step="0.1" placeholder="4.5">
+              </div>
+              <div class="form-field">
+                <label>Badge (optional)</label>
+                <input type="text" id="affBadge" placeholder="Best Value / Editor's Choice / Deal">
+              </div>
+            </div>
+            <small style="color:#6b7280;">💡 Fill the affiliate link minimum — card එක article අන්තිමට auto-add වෙනවා + disclosure එකත්!</small>
+          </div>
+        </details>
+      </div>
+
       <!-- 🎯 SEO CHECK PANEL -->
       <div class="seo-panel">
         <div class="seo-check" id="chkTitle">• Title: —</div>
@@ -186,9 +272,6 @@
       <div class="preview-toggle-wrap">
         <button class="toggle-btn active" id="tabEditor">✏️ Editor</button>
         <button class="toggle-btn" id="tabPreview">👁️ Preview</button>
-      </div>
-      <div id="editorSection">
-        <!-- editor already above -->
       </div>
     </div>
 
