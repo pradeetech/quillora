@@ -166,20 +166,23 @@ if (location.pathname.split('/').pop() === 'article.html') {
   }, { passive: true });
 }
 
-// ---------- 🌙 Dark Mode Toggle ----------
+// ---------- 🌙 Dark Mode (Auto-apply + Toggle) ----------
 (function initDarkMode() {
-  const btn = document.getElementById('darkToggle');
-  if (!btn) return;
+  // Theme localStorage එකෙන් apply — හැම page එකකම (button තියෙන්න ඕනෑ නෑ!)
   const saved = localStorage.getItem('quillora-theme');
   if (saved === 'dark') {
     document.body.classList.add('dark-mode');
-    btn.textContent = '☀️';
   }
-  btn.addEventListener('click', () => {
-    const isDark = document.body.classList.toggle('dark-mode');
-    btn.textContent = isDark ? '☀️' : '🌙';
-    localStorage.setItem('quillora-theme', isDark ? 'dark' : 'light');
-  });
+  // Toggle button එකක් තියෙනවා නම් විතරක් click handler එක attach කරනවා
+  const btn = document.getElementById('darkToggle');
+  if (btn) {
+    btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+    btn.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark-mode');
+      btn.textContent = isDark ? '☀️' : '🌙';
+      localStorage.setItem('quillora-theme', isDark ? 'dark' : 'light');
+    });
+  }
 })();
 
 // ---------- 📲 OneSignal Push Notifications ----------
