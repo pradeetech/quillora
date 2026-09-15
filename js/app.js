@@ -54,7 +54,7 @@ async function initHome() {
     btn?.addEventListener('click', () => loadLatest(false));
   } catch (e) {
     console.error(e);
-    tGrid.innerHTML = lGrid.innerHTML = '<div class="empty">Database error — Firebase settings check කරන්න.</div>';
+    tGrid.innerHTML = lGrid.innerHTML = '<div class="empty">Database error — please check Firebase settings.</div>';
   }
 }
 
