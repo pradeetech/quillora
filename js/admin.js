@@ -236,7 +236,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     updatedAt: serverTimestamp()
   };
 
-  // 💰 Affiliate product (optional — link එක දැම්මොත් විතරයි save වෙනවා)
+  // 💰 Affiliate product (optional — saved only if affiliate link is filled)
   const affLink = document.getElementById('affLink').value.trim();
   if (affLink) {
     data.affiliate = {
