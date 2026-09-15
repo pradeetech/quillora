@@ -547,3 +547,11 @@ body.dark-mode .aff-old { color: #6b7280; }
   .aff-image { margin: 0 auto; }
   .aff-pricing { justify-content: center; }
 }
+
+body.dark-mode .auth-card .sub { color:#9ca3af; }
+body.dark-mode .google-btn { background:#1a1d36; color:#e5e7eb; border-color:#2d3250; }
+body.dark-mode .google-btn:hover { background:#252a4a; }
+body.dark-mode .auth-alt { color:#9ca3af; }
+body.dark-mode .divider { color:#6b7280; }
+body.dark-mode .auth-wrap { background:#12142a; }
+body.dark-mode .form-field label { color:#9ca3af; }
