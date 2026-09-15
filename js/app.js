@@ -135,7 +135,6 @@ async function initArticle() {
             <a href="${escapeHtml(a.affiliate.link)}" target="_blank" rel="nofollow sponsored noopener" class="aff-buy">
               🛒 Buy Now — View on Store
             </a>
-            <p class="aff-disclosure">We may earn a commission at no extra cost to you.</p>
           </div>
         </div>
       </div>` : ''}
