@@ -201,7 +201,7 @@ if (location.pathname.split('/').pop() === 'article.html') {
               type: "push",
               autoPrompt: true,
               text: {
-                actionMessage: "අලුත් articles ලැබෙනකොට notification එකක් ගන්නද?",
+              actionMessage: "Get notified when new articles are published!",
                 acceptButton: "Subscribe",
                 cancelButton: "Not now"
               }
